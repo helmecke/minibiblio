@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minibiblio-backend"
+version = "0.1.0"
+description = "Template FastAPI backend for the MiniBiblio fullstack starter."
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic-settings>=2.2.1",
+    "python-multipart>=0.0.9",
+    "python-jose[cryptography]>=3.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27.0",
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[tool.uvicorn]
+factory = false
+reload = true
+host = "127.0.0.1"
+port = 8000
+log_level = "info"

@@ -1,0 +1,15 @@
+pyproject.toml
+app/__init__.py
+app/config.py
+app/dependencies.py
+app/main.py
+app/schemas.py
+app/security.py
+app/users.py
+app/routes/__init__.py
+app/routes/auth.py
+minibiblio_backend.egg-info/PKG-INFO
+minibiblio_backend.egg-info/SOURCES.txt
+minibiblio_backend.egg-info/dependency_links.txt
+minibiblio_backend.egg-info/requires.txt
+minibiblio_backend.egg-info/top_level.txt

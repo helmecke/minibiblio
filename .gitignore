@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+
+# FastAPI
+.env
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.turbo/
+
+# macOS / Linux
+.DS_Store
+
+# Coverage & reports
+coverage/
+.pytest_cache/
+
