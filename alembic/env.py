@@ -9,7 +9,7 @@ from alembic import context
 
 from api.config import settings
 from api.db.database import Base
-from api.db.models import PatronDB  # noqa: F401 - needed for autogenerate
+from api.db.models import PatronDB, CatalogItemDB  # noqa: F401 - needed for autogenerate
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

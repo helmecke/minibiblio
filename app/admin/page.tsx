@@ -19,11 +19,31 @@ async function getPatronCount(status?: string): Promise<number> {
   }
 }
 
+async function getCatalogCount(type?: string, status?: string): Promise<number> {
+  try {
+    const params = new URLSearchParams();
+    if (type) params.set("type", type);
+    if (status) params.set("status", status);
+    const query = params.toString();
+    const url = query
+      ? `http://127.0.0.1:8000/api/python/catalog/count?${query}`
+      : "http://127.0.0.1:8000/api/python/catalog/count";
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return 0;
+    const data: CountResponse = await res.json();
+    return data.count;
+  } catch {
+    return 0;
+  }
+}
+
 export default async function AdminDashboard() {
   const session = await auth();
-  const [activePatrons, totalPatrons] = await Promise.all([
+  const [activePatrons, totalPatrons, totalCatalog, borrowedItems] = await Promise.all([
     getPatronCount("active"),
     getPatronCount(),
+    getCatalogCount(),
+    getCatalogCount(undefined, "borrowed"),
   ]);
 
   return (
@@ -39,12 +59,12 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Total Books</h3>
+            <h3 className="text-sm font-medium">Catalog Items</h3>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">0</div>
+          <div className="text-2xl font-bold">{totalCatalog}</div>
           <p className="text-xs text-muted-foreground">
-            No books added yet
+            {totalCatalog === 0 ? "No items added yet" : "Books and media"}
           </p>
         </div>
 
@@ -64,9 +84,9 @@ export default async function AdminDashboard() {
             <h3 className="text-sm font-medium">Borrowed</h3>
             <Package className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">0</div>
+          <div className="text-2xl font-bold">{borrowedItems}</div>
           <p className="text-xs text-muted-foreground">
-            No active loans
+            {borrowedItems === 0 ? "No active loans" : "Items currently borrowed"}
           </p>
         </div>
 

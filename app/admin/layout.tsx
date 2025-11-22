@@ -37,7 +37,7 @@ export default function AdminLayout({
               <span className="sr-only">MiniBiblio</span>
             </Link>
             <NavItem href="/admin" icon={<Home className="h-5 w-5" />} label="Dashboard" />
-            <NavItem href="/admin/books" icon={<Package className="h-5 w-5" />} label="Books" />
+            <NavItem href="/admin/catalog" icon={<Package className="h-5 w-5" />} label="Catalog" />
             <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label="Patrons" />
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -75,11 +75,11 @@ export default function AdminLayout({
                     Dashboard
                   </Link>
                   <Link
-                    href="/admin/books"
+                    href="/admin/catalog"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Package className="h-5 w-5" />
-                    Books
+                    Catalog
                   </Link>
                   <Link
                     href="/admin/patrons"
