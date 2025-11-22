@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    ports:
+      - "5432:5432"
+    networks:
+      - minibiblio
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  db_test:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdatabase
+    ports:
+      - "5433:5432"
+    networks:
+      - minibiblio
+    restart: always
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - minibiblio
+
+volumes:
+  postgres_data:
+
+networks:
+  minibiblio:
+    driver: bridge

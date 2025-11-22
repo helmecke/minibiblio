@@ -1,28 +1,30 @@
 import { auth } from "@/lib/auth";
 import { Package, Users2, BookOpen, TrendingUp } from "lucide-react";
 
-interface Patron {
-  id: string;
-  status: "active" | "inactive" | "suspended";
+interface CountResponse {
+  count: number;
 }
 
-async function getPatrons(): Promise<Patron[]> {
+async function getPatronCount(status?: string): Promise<number> {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/python/patrons", {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    return res.json();
+    const url = status
+      ? `http://127.0.0.1:8000/api/python/patrons/count?status=${status}`
+      : "http://127.0.0.1:8000/api/python/patrons/count";
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return 0;
+    const data: CountResponse = await res.json();
+    return data.count;
   } catch {
-    return [];
+    return 0;
   }
 }
 
 export default async function AdminDashboard() {
   const session = await auth();
-  const patrons = await getPatrons();
-  const activePatrons = patrons.filter((p) => p.status === "active").length;
-  const totalPatrons = patrons.length;
+  const [activePatrons, totalPatrons] = await Promise.all([
+    getPatronCount("active"),
+    getPatronCount(),
+  ]);
 
   return (
     <div className="space-y-6">

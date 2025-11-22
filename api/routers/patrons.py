@@ -1,145 +1,130 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from datetime import datetime
+from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
-from api.models.patron import Patron, PatronCreate, PatronUpdate, PatronStatus
+from api.models.patron import Patron, PatronCreate, PatronUpdate
+from api.db.database import get_db
+from api.db.models import PatronDB, PatronStatus
 
 router = APIRouter(prefix="/patrons", tags=["patrons"])
 
-# Mock data store
-_patrons: dict[str, Patron] = {}
+
+def _generate_membership_id() -> str:
+    """Generate a unique membership ID."""
+    short_uuid = str(uuid.uuid4())[:8].upper()
+    return f"LIB-{short_uuid}"
 
 
-def _init_mock_data():
-    """Initialize with sample patron data."""
-    if _patrons:
-        return
-
-    sample_patrons = [
-        {
-            "first_name": "Alice",
-            "last_name": "Johnson",
-            "email": "alice.johnson@email.com",
-            "phone": "+1 555-0101",
-            "status": PatronStatus.active,
-            "borrowing_limit": 5,
-            "current_borrowed_count": 2,
-        },
-        {
-            "first_name": "Bob",
-            "last_name": "Smith",
-            "email": "bob.smith@email.com",
-            "phone": "+1 555-0102",
-            "status": PatronStatus.active,
-            "borrowing_limit": 5,
-            "current_borrowed_count": 0,
-        },
-        {
-            "first_name": "Carol",
-            "last_name": "Williams",
-            "email": "carol.w@email.com",
-            "phone": "+1 555-0103",
-            "status": PatronStatus.suspended,
-            "borrowing_limit": 5,
-            "current_borrowed_count": 3,
-            "notes": "Overdue books - contacted on 2024-01-15",
-        },
-        {
-            "first_name": "David",
-            "last_name": "Brown",
-            "email": "david.brown@email.com",
-            "status": PatronStatus.inactive,
-            "borrowing_limit": 3,
-            "current_borrowed_count": 0,
-        },
-        {
-            "first_name": "Emma",
-            "last_name": "Davis",
-            "email": "emma.davis@email.com",
-            "phone": "+1 555-0105",
-            "status": PatronStatus.active,
-            "borrowing_limit": 10,
-            "current_borrowed_count": 5,
-            "notes": "Premium member",
-        },
-    ]
-
-    for i, data in enumerate(sample_patrons):
-        patron_id = str(uuid.uuid4())
-        now = datetime.now()
-        _patrons[patron_id] = Patron(
-            id=patron_id,
-            membership_id=f"LIB-{1000 + i}",
-            created_at=now,
-            updated_at=now,
-            **data,
-        )
-
-
-# Initialize mock data on module load
-_init_mock_data()
+def _patron_to_response(db_patron: PatronDB) -> Patron:
+    """Convert database model to response model."""
+    return Patron(
+        id=str(db_patron.id),
+        membership_id=db_patron.membership_id,
+        first_name=db_patron.first_name,
+        last_name=db_patron.last_name,
+        email=db_patron.email,
+        phone=db_patron.phone,
+        status=db_patron.status,
+        created_at=db_patron.created_at,
+        updated_at=db_patron.updated_at,
+    )
 
 
 @router.get("", response_model=List[Patron])
-async def list_patrons():
+async def list_patrons(db: AsyncSession = Depends(get_db)):
     """Get all patrons."""
-    return list(_patrons.values())
+    result = await db.execute(select(PatronDB).order_by(PatronDB.created_at.desc()))
+    patrons = result.scalars().all()
+    return [_patron_to_response(p) for p in patrons]
+
+
+@router.get("/count")
+async def count_patrons(
+    status: PatronStatus | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Get patron count, optionally filtered by status."""
+    query = select(func.count(PatronDB.id))
+    if status:
+        query = query.where(PatronDB.status == status)
+    result = await db.execute(query)
+    return {"count": result.scalar()}
 
 
 @router.get("/{patron_id}", response_model=Patron)
-async def get_patron(patron_id: str):
+async def get_patron(patron_id: str, db: AsyncSession = Depends(get_db)):
     """Get a single patron by ID."""
-    if patron_id not in _patrons:
+    try:
+        patron_uuid = uuid.UUID(patron_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid patron ID format")
+
+    result = await db.execute(select(PatronDB).where(PatronDB.id == patron_uuid))
+    patron = result.scalar_one_or_none()
+
+    if not patron:
         raise HTTPException(status_code=404, detail="Patron not found")
-    return _patrons[patron_id]
+    return _patron_to_response(patron)
 
 
 @router.post("", response_model=Patron, status_code=201)
-async def create_patron(patron_data: PatronCreate):
+async def create_patron(patron_data: PatronCreate, db: AsyncSession = Depends(get_db)):
     """Create a new patron."""
-    patron_id = str(uuid.uuid4())
-    now = datetime.now()
-
-    # Generate membership ID
-    max_num = 1000
-    for p in _patrons.values():
-        num = int(p.membership_id.split("-")[1])
-        if num >= max_num:
-            max_num = num + 1
-    membership_id = f"LIB-{max_num}"
-
-    patron = Patron(
-        id=patron_id,
-        membership_id=membership_id,
-        current_borrowed_count=0,
-        created_at=now,
-        updated_at=now,
-        **patron_data.model_dump(),
+    db_patron = PatronDB(
+        membership_id=_generate_membership_id(),
+        first_name=patron_data.first_name,
+        last_name=patron_data.last_name,
+        email=patron_data.email,
+        phone=patron_data.phone,
+        status=patron_data.status,
     )
-    _patrons[patron_id] = patron
-    return patron
+    db.add(db_patron)
+    await db.flush()
+    await db.refresh(db_patron)
+    return _patron_to_response(db_patron)
 
 
 @router.put("/{patron_id}", response_model=Patron)
-async def update_patron(patron_id: str, patron_data: PatronUpdate):
+async def update_patron(
+    patron_id: str,
+    patron_data: PatronUpdate,
+    db: AsyncSession = Depends(get_db),
+):
     """Update an existing patron."""
-    if patron_id not in _patrons:
+    try:
+        patron_uuid = uuid.UUID(patron_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid patron ID format")
+
+    result = await db.execute(select(PatronDB).where(PatronDB.id == patron_uuid))
+    patron = result.scalar_one_or_none()
+
+    if not patron:
         raise HTTPException(status_code=404, detail="Patron not found")
 
-    existing = _patrons[patron_id]
     update_data = patron_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(patron, field, value)
 
-    updated = existing.model_copy(
-        update={**update_data, "updated_at": datetime.now()}
-    )
-    _patrons[patron_id] = updated
-    return updated
+    await db.flush()
+    await db.refresh(patron)
+    return _patron_to_response(patron)
 
 
 @router.delete("/{patron_id}", status_code=204)
-async def delete_patron(patron_id: str):
+async def delete_patron(patron_id: str, db: AsyncSession = Depends(get_db)):
     """Delete a patron."""
-    if patron_id not in _patrons:
+    try:
+        patron_uuid = uuid.UUID(patron_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid patron ID format")
+
+    result = await db.execute(select(PatronDB).where(PatronDB.id == patron_uuid))
+    patron = result.scalar_one_or_none()
+
+    if not patron:
         raise HTTPException(status_code=404, detail="Patron not found")
-    del _patrons[patron_id]
+
+    await db.delete(patron)
