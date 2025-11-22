@@ -1,43 +1,86 @@
-# MiniBiblio Fullstack Template
+<p align="center">
+  <a href="https://nextjs-fastapi-starter.vercel.app/">
+    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
+    <h3 align="center">Next.js FastAPI Starter</h3>
+  </a>
+</p>
 
-This repository now ships a dual-stack starter composed of a FastAPI backend and a Next.js frontend. Both apps expose baseline login flows for **patrons** and **librarians** so you can wire authentication, persistence, and UI polish without starting from scratch.
+<p align="center">Simple Next.js boilerplate that uses BOTH <a href="https://fastapi.tiangolo.com/">FastAPI</a> AND NEXTJS 13 as the API backend unlike <a href="https://github.com/digitros/nextjs-fastapi" >the example offered by NextJS</a>
 
-## Project Layout
+<br/>
 
-- `backend/`: FastAPI application with login and admin-auth endpoints, JWT issuance, and in-memory seed users.
-- `frontend/`: Next.js application showcasing login form templates, local session storage, and a guarded admin dashboard stub.
+## Introduction
 
-## Backend Quickstart
+This is a hybrid Next.js + Python app that uses a fullstack Next.js application and FastAPI as another API backend. One great use case of this is to write Next.js apps that use Python AI libraries on the backend.
+
+## How It Works
+
+The Python/FastAPI server is mapped into to Next.js app under `/api/py/`(easily changeable) and the NextJS is mapped to `/api/`.
+
+This is implemented using [`next.config.js` rewrites](https://github.com/digitros/nextjs-fastapi/blob/main/next.config.js) to map any request to `/api/py/:path*` to the FastAPI API, which is hosted in the `/api` folder.
+
+On localhost, the rewrite will be made to the `127.0.0.1:8000` port, which is where the FastAPI server is running.
+
+In production, the FastAPI server is hosted as [Python serverless functions](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python) on Vercel.
+
+## Demo
+
+<https://nextjs-fastapi-starter.vercel.app/>
+
+## Deploy Your Own
+
+You can clone & deploy it to Vercel with one click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpsycho-baller%2Fnextjs-and-fastapi-backend%2Ftree%2Fmain)
+
+## Developing Locally
+
+You can clone & create this repo with the following command
 
 ```bash
-cd backend
-uv sync --extra dev
-uv run uvicorn app.main:app --reload
+npx create-next-app nextjs-fastapi --example "https://github.com/psycho-baller/nextjs-and-fastapi-backend"
 ```
 
-Environment toggles live in `backend/app/config.py`. Duplicate the defaults into `.env` if you want secrets outside version control.
-At minimum set a unique `MINIBIBLIO_JWT_SECRET` and `MINIBIBLIO_PASSWORD_SALT` before deploying.
+## Getting Started
 
-## Frontend Quickstart
+First, install the dependencies:
 
 ```bash
-cd frontend
 npm install
-npm run dev
+# or
+yarn
+# or
+pnpm install
 ```
 
-Set `NEXT_PUBLIC_API_BASE_URL` in `.env.local` if the API runs somewhere other than `http://localhost:8000`.
-When both apps are running, the default login endpoints live at `http://localhost:8000/auth/login` and `http://localhost:8000/auth/admin/login`.
+Create a virtual environment and install the dependencies for the FastAPI server:
 
-## Seed Credentials
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-- Patron login (user portal): `patron / patron123`
-- Librarian login (admin portal): `librarian / library123` — token cached in `localStorage` for demo navigation
+Then, run the development server:
 
-Swap the in-memory store in `backend/app/users.py` with a persistence layer when you integrate a database or identity provider.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
 
-## Next Steps
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Replace token storage with a secure session strategy that matches your hosting plan.
-- Harden the admin dashboard by exchanging real metrics for the placeholder copy.
-- Add automated tests: Pytest for backend flows, Playwright or Cypress for UI validation.
+The FastApi server will be running on [http://127.0.0.1:8000](http://127.0.0.1:8000) – feel free to change the port in `package.json` (you'll also need to update it in `next.config.js`).
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [FastAPI Documentation](https://fastapi.tiangolo.com/) - learn about FastAPI features and API.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
