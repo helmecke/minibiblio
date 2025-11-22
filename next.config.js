@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+    ],
+  },
   rewrites: async () => {
     return [
       {
@@ -8,20 +16,6 @@ const nextConfig = {
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/api/python/:path*"
             : "/api/",
-      },
-      {
-        source: "/docs",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://127.0.0.1:8000/api/python/docs"
-            : "/api/python/docs",
-      },
-      {
-        source: "/openapi.json",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://127.0.0.1:8000/api/python/openapi.json"
-            : "/api/python/openapi.json",
       },
     ];
   },
