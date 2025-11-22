@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -9,19 +11,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Patron {
   id: string;
   first_name: string;
   last_name: string;
-  email: string;
+  email?: string;
   phone?: string;
   membership_id: string;
   status: "active" | "inactive" | "suspended";
-  borrowing_limit: number;
-  current_borrowed_count: number;
-  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -44,6 +51,29 @@ function getStatusBadgeVariant(status: Patron["status"]) {
 }
 
 export function PatronsTable({ patrons }: PatronsTableProps) {
+  const router = useRouter();
+
+  const handleDelete = async (patronId: string) => {
+    if (!confirm("Are you sure you want to delete this patron?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/python/patrons/${patronId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete patron");
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting patron:", error);
+      alert("Failed to delete patron");
+    }
+  };
+
   if (patrons.length === 0) {
     return (
       <Card>
@@ -71,7 +101,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
               <TableHead>Email</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Borrowed</TableHead>
+              <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -83,15 +113,48 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                 <TableCell className="font-medium">
                   {patron.first_name} {patron.last_name}
                 </TableCell>
-                <TableCell>{patron.email}</TableCell>
+                <TableCell>{patron.email || "-"}</TableCell>
                 <TableCell>{patron.phone || "-"}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(patron.status)}>
                     {patron.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right">
-                  {patron.current_borrowed_count} / {patron.borrowing_limit}
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() =>
+                          router.push(`/admin/patrons/${patron.id}`)
+                        }
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          router.push(`/admin/patrons/${patron.id}/edit`)
+                        }
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(patron.id)}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}

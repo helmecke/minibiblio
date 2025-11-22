@@ -1,4 +1,5 @@
 import { PatronsTable } from "./patrons-table";
+import { AddPatronDialog } from "./add-patron-dialog";
 
 async function getPatrons() {
   const res = await fetch("http://127.0.0.1:8000/api/python/patrons", {
@@ -29,6 +30,7 @@ export default async function PatronsPage() {
             Manage library members and their information
           </p>
         </div>
+        <AddPatronDialog />
       </div>
 
       {error ? (
