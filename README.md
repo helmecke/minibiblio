@@ -53,12 +53,10 @@ yarn
 pnpm install
 ```
 
-Create a virtual environment and install the dependencies for the FastAPI server:
+Install [uv](https://docs.astral.sh/uv/) for Python dependency management:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 Then, run the development server:
