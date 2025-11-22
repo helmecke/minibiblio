@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 
-app = FastAPI(docs_url="/api/py/docs", openapi_url="/api/py/openapi.json")
+app = FastAPI(docs_url="/api/python/docs", openapi_url="/api/python/openapi.json")
 
-@app.get("/api/py/healthcheck")
+
+@app.get("/api/python/healthcheck")
 def healthchecker():
-    return {"status": "success", "message": "Integrated FastAPI Framework with Next.js successfully!"}
+    return {
+        "status": "success",
+        "message": "Integrated FastAPI Framework with Next.js successfully!",
+    }
