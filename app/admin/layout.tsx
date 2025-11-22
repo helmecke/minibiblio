@@ -38,7 +38,7 @@ export default function AdminLayout({
             </Link>
             <NavItem href="/admin" icon={<Home className="h-5 w-5" />} label="Dashboard" />
             <NavItem href="/admin/books" icon={<Package className="h-5 w-5" />} label="Books" />
-            <NavItem href="/admin/users" icon={<Users2 className="h-5 w-5" />} label="Users" />
+            <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label="Patrons" />
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <NavItem href="/admin/settings" icon={<Settings className="h-5 w-5" />} label="Settings" />
@@ -82,11 +82,11 @@ export default function AdminLayout({
                     Books
                   </Link>
                   <Link
-                    href="/admin/users"
+                    href="/admin/patrons"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Users2 className="h-5 w-5" />
-                    Users
+                    Patrons
                   </Link>
                   <Link
                     href="/admin/settings"

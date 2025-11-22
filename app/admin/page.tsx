@@ -1,8 +1,28 @@
 import { auth } from "@/lib/auth";
 import { Package, Users2, BookOpen, TrendingUp } from "lucide-react";
 
+interface Patron {
+  id: string;
+  status: "active" | "inactive" | "suspended";
+}
+
+async function getPatrons(): Promise<Patron[]> {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/python/patrons", {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 export default async function AdminDashboard() {
   const session = await auth();
+  const patrons = await getPatrons();
+  const activePatrons = patrons.filter((p) => p.status === "active").length;
+  const totalPatrons = patrons.length;
 
   return (
     <div className="space-y-6">
@@ -28,12 +48,12 @@ export default async function AdminDashboard() {
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Active Users</h3>
+            <h3 className="text-sm font-medium">Active Patrons</h3>
             <Users2 className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">1</div>
+          <div className="text-2xl font-bold">{activePatrons}</div>
           <p className="text-xs text-muted-foreground">
-            You are the first user
+            {totalPatrons} total patrons
           </p>
         </div>
 
