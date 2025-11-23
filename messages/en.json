@@ -189,6 +189,23 @@
     "description": "Access your library management dashboard",
     "continueWith": "Continue with {provider}"
   },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure application settings",
+    "saving": "Saving...",
+    "saved": "Settings saved successfully",
+    "catalogId": {
+      "title": "Catalog ID Format",
+      "description": "Configure how new catalog IDs are generated",
+      "format": "Format",
+      "formatHelp": "Use '{'number'}' for counter and '{'year'}' for 2-digit year",
+      "currentNumber": "Current Counter",
+      "counterHelp": "The next item will use counter + 1. Resets to 1 on new year.",
+      "reset": "Reset",
+      "preview": "Next catalog ID will be:",
+      "yearInfo": "Current year: {year}"
+    }
+  },
   "import": {
     "title": "Import Catalog",
     "description": "Import books and media from CSV files",

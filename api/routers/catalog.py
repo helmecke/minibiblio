@@ -9,14 +9,9 @@ from api.db.database import get_db
 from api.db.models import CatalogItemDB
 from api.db.models import CatalogItemType as DBCatalogItemType
 from api.db.models import CatalogItemStatus as DBCatalogItemStatus
+from api.routers.settings import generate_catalog_id
 
 router = APIRouter(prefix="/catalog", tags=["catalog"])
-
-
-def _generate_catalog_id() -> str:
-    """Generate a unique catalog ID."""
-    short_uuid = str(uuid.uuid4())[:8].upper()
-    return f"CAT-{short_uuid}"
 
 
 def _item_to_response(db_item: CatalogItemDB) -> CatalogItem:
@@ -106,8 +101,9 @@ async def get_catalog_item(item_id: str, db: AsyncSession = Depends(get_db)):
 @router.post("", response_model=CatalogItem, status_code=201)
 async def create_catalog_item(item_data: CatalogItemCreate, db: AsyncSession = Depends(get_db)):
     """Create a new catalog item."""
+    catalog_id = await generate_catalog_id(db)
     db_item = CatalogItemDB(
-        catalog_id=_generate_catalog_id(),
+        catalog_id=catalog_id,
         type=item_data.type,
         title=item_data.title,
         author=item_data.author,

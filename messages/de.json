@@ -189,6 +189,23 @@
     "description": "Zugang zu Ihrem Bibliotheksverwaltungs-Dashboard",
     "continueWith": "Weiter mit {provider}"
   },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Anwendungseinstellungen konfigurieren",
+    "saving": "Wird gespeichert...",
+    "saved": "Einstellungen erfolgreich gespeichert",
+    "catalogId": {
+      "title": "Katalognummer-Format",
+      "description": "Konfigurieren Sie, wie neue Katalognummern generiert werden",
+      "format": "Format",
+      "formatHelp": "Verwenden Sie '{'number'}' für Zähler und '{'year'}' für 2-stelliges Jahr",
+      "currentNumber": "Aktueller Zähler",
+      "counterHelp": "Das nächste Medium erhält Zähler + 1. Wird bei neuem Jahr auf 1 zurückgesetzt.",
+      "reset": "Zurücksetzen",
+      "preview": "Nächste Katalognummer:",
+      "yearInfo": "Aktuelles Jahr: {year}"
+    }
+  },
   "import": {
     "title": "Katalog importieren",
     "description": "Bücher und Medien aus CSV-Dateien importieren",

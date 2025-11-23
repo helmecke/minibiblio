@@ -30,8 +30,10 @@ minibiblio/
 │   │   │   │   ├── loans-table.tsx
 │   │   │   │   ├── checkout-dialog.tsx
 │   │   │   │   └── [id]/       # Loan details
-│   │   │   └── import/         # CSV import
-│   │   │       └── page.tsx    # Import page with upload/preview/import
+│   │   │   ├── import/         # CSV import
+│   │   │   │   └── page.tsx    # Import page with upload/preview/import
+│   │   │   └── settings/       # Application settings
+│   │   │       └── page.tsx    # Settings page with catalog ID config
 │   │   └── login/              # Login page
 │   ├── globals.css             # Global styles
 │   └── layout.tsx              # Root layout
@@ -46,12 +48,14 @@ minibiblio/
 │   │   ├── patron.py
 │   │   ├── catalog.py
 │   │   ├── loan.py
-│   │   └── import_models.py    # Import/export schemas
+│   │   ├── import_models.py    # Import/export schemas
+│   │   └── settings.py         # Settings schemas
 │   └── routers/                # API routes
 │       ├── patrons.py
 │       ├── catalog.py
 │       ├── loans.py
-│       └── import_router.py    # CSV import endpoints
+│       ├── import_router.py    # CSV import endpoints
+│       └── settings.py         # App settings & catalog ID config
 │
 ├── alembic/                    # Database migrations
 │   ├── env.py                  # Migration config

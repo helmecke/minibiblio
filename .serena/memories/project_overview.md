@@ -71,6 +71,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - `catalog` - Catalog management
 - `circulation` - Loan management
 - `import` - CSV import feature
+- `settings` - Application settings
 - `errors` - Error messages
 - `login` - Login page
 
@@ -130,6 +131,12 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Duplicate Handling**: Skip, update existing, or always create new
 - **Encoding Support**: UTF-8-sig and latin-1 fallback for German characters
 
+### Settings
+- **Page**: `/admin/settings` - Application configuration
+- **Catalog ID Format**: Configurable format (default: `{number}/{year}` → "1/24", "2/24")
+- **Counter Management**: Auto-increment, resets to 1 on new year
+- **Database**: Settings stored in `app_settings` table (key-value)
+
 ## Database Models
 
 ### PatronDB
@@ -185,6 +192,11 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 ### Import (`/api/python/import`)
 - POST `/catalog/preview` - Preview CSV file (multipart/form-data)
 - POST `/catalog` - Import catalog items from CSV (multipart/form-data, query params: duplicate_handling, default_language)
+
+### Settings (`/api/python/settings`)
+- GET `/catalog-id/config` - Get catalog ID configuration
+- PUT `/catalog-id/config` - Update catalog ID configuration
+- GET `/catalog-id/preview` - Preview next catalog ID
 
 ## Key Files
 
