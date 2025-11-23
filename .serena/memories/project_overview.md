@@ -72,6 +72,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - `circulation` - Loan management
 - `import` - CSV import feature
 - `settings` - Application settings
+- `reports` - Reports and statistics (patronHistory, yearlyStats, bookHistory, table, status, months)
 - `errors` - Error messages
 - `login` - Login page
 
@@ -137,6 +138,17 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Counter Management**: Auto-increment, resets to 1 on new year
 - **Database**: Settings stored in `app_settings` table (key-value)
 
+### Reports
+- **Page**: `/admin/reports` - Library statistics and loan history
+- **Patron Loan History (Leserverzeichnis)**: Select patron → view all loans with dates, status
+- **Yearly Statistics (Jahresstatistik)**: Select year → total loans, unique books/patrons, monthly breakdown, top 10 books
+- **Patron Detail Integration**: Loan history table shown on `/admin/patrons/[id]`
+- **Catalog Detail Integration**: Loan history table shown on `/admin/catalog/[id]`
+
+### Quick Actions
+- **Checkout from Catalog**: Available items show "Checkout" button on detail page and in table "..." menu
+- **Checkout Dialog**: Pre-selects item, user picks patron + loan period
+
 ## Database Models
 
 ### PatronDB
@@ -198,14 +210,20 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - PUT `/catalog-id/config` - Update catalog ID configuration
 - GET `/catalog-id/preview` - Preview next catalog ID
 
+### Reports (`/api/python/reports`)
+- GET `/patrons` - List patrons for report dropdown
+- GET `/patron/{patron_id}/loans` - Get complete loan history for a patron
+- GET `/book/{item_id}/loans` - Get complete loan history for a book
+- GET `/statistics/yearly?year=YYYY` - Get yearly statistics (total loans, unique books/patrons, top 10, monthly breakdown)
+
 ## Key Files
 
 ### Backend
 - `api/config.py` - Settings from environment
 - `api/db/database.py` - Async SQLAlchemy engine
 - `api/db/models.py` - ORM models (PatronDB, CatalogItemDB, LoanDB)
-- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py, import_models.py)
-- `api/routers/` - API routes (patrons.py, catalog.py, loans.py, import_router.py)
+- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py, import_models.py, reports.py, settings.py)
+- `api/routers/` - API routes (patrons.py, catalog.py, loans.py, import_router.py, reports.py, settings.py)
 - `alembic/versions/` - Database migrations
 
 ### Frontend
@@ -215,6 +233,8 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - `app/[locale]/admin/catalog/` - Catalog management pages
 - `app/[locale]/admin/circulation/` - Loan management pages
 - `app/[locale]/admin/import/` - CSV import page
+- `app/[locale]/admin/settings/` - Settings page
+- `app/[locale]/admin/reports/` - Reports page (patron history, yearly stats)
 - `i18n/` - Internationalization config (config.ts, request.ts, navigation.ts)
 - `messages/` - Translation files (en.json, de.json)
 

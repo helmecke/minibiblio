@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CheckoutItemDialog } from "./checkout-item-dialog";
 
 interface CatalogItem {
   id: string;
@@ -159,12 +160,21 @@ export default async function CatalogItemDetailsPage({
             <p className="text-muted-foreground font-mono">{item.catalog_id}</p>
           </div>
         </div>
-        <Button asChild>
-          <Link href={`/admin/catalog/${item.id}/edit`}>
-            <Pencil className="mr-2 h-4 w-4" />
-            {t("editItem")}
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          {item.status === "available" && (
+            <CheckoutItemDialog
+              itemId={item.id}
+              itemTitle={item.title}
+              catalogId={item.catalog_id}
+            />
+          )}
+          <Button asChild>
+            <Link href={`/admin/catalog/${item.id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              {t("editItem")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
