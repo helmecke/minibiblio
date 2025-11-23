@@ -9,6 +9,7 @@ import {
   BookOpen,
   ArrowLeftRight,
   Upload,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ export default async function AdminLayout({
             <NavItem href="/admin/catalog" icon={<Package className="h-5 w-5" />} label={t("catalog")} />
             <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label={t("patrons")} />
             <NavItem href="/admin/import" icon={<Upload className="h-5 w-5" />} label={t("import")} />
+            <NavItem href="/admin/reports" icon={<BarChart3 className="h-5 w-5" />} label={t("reports")} />
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <NavItem href="/admin/settings" icon={<Settings className="h-5 w-5" />} label={t("settings")} />
@@ -109,6 +111,13 @@ export default async function AdminLayout({
                   >
                     <Upload className="h-5 w-5" />
                     {t("import")}
+                  </Link>
+                  <Link
+                    href="/admin/reports"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <BarChart3 className="h-5 w-5" />
+                    {t("reports")}
                   </Link>
                   <Link
                     href="/admin/settings"

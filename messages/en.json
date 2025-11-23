@@ -30,6 +30,7 @@
     "catalog": "Catalog",
     "circulation": "Circulation",
     "import": "Import",
+    "reports": "Reports",
     "settings": "Settings",
     "minibiblio": "MiniBiblio"
   },
@@ -246,5 +247,61 @@
     "errorDetails": "Error Details",
     "row": "Row",
     "importAnother": "Import Another File"
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "View loan history and library statistics",
+    "patronHistory": {
+      "title": "Patron Loan History",
+      "description": "View complete borrowing history for each patron",
+      "selectPatron": "Select a patron",
+      "totalLoans": "Total Loans",
+      "activeLoans": "Active Loans",
+      "noLoans": "No loans found for this patron"
+    },
+    "yearlyStats": {
+      "title": "Yearly Statistics",
+      "description": "Annual lending statistics and popular books",
+      "totalLoans": "Total Loans",
+      "uniqueBooks": "Unique Books",
+      "uniquePatrons": "Active Patrons",
+      "monthlyBreakdown": "Monthly Breakdown",
+      "topBooks": "Most Borrowed Books",
+      "noData": "No loan data for this year"
+    },
+    "bookHistory": {
+      "title": "Loan History",
+      "totalLoans": "Total Loans",
+      "noLoans": "This item has never been borrowed"
+    },
+    "table": {
+      "catalogId": "Catalog ID",
+      "title": "Title",
+      "author": "Author",
+      "patron": "Patron",
+      "checkoutDate": "Checkout Date",
+      "returnDate": "Return Date",
+      "status": "Status",
+      "loanCount": "Times Borrowed"
+    },
+    "status": {
+      "active": "Active",
+      "returned": "Returned",
+      "overdue": "Overdue"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    }
   }
 }

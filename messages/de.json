@@ -30,6 +30,7 @@
     "catalog": "Katalog",
     "circulation": "Ausleihe",
     "import": "Import",
+    "reports": "Berichte",
     "settings": "Einstellungen",
     "minibiblio": "MiniBiblio"
   },
@@ -246,5 +247,61 @@
     "errorDetails": "Fehlerdetails",
     "row": "Zeile",
     "importAnother": "Weitere Datei importieren"
+  },
+  "reports": {
+    "title": "Berichte",
+    "description": "Ausleihhistorie und Bibliotheksstatistiken anzeigen",
+    "patronHistory": {
+      "title": "Leserverzeichnis",
+      "description": "Vollständige Ausleihhistorie für jeden Benutzer anzeigen",
+      "selectPatron": "Benutzer auswählen",
+      "totalLoans": "Ausleihen gesamt",
+      "activeLoans": "Aktive Ausleihen",
+      "noLoans": "Keine Ausleihen für diesen Benutzer gefunden"
+    },
+    "yearlyStats": {
+      "title": "Jahresstatistik",
+      "description": "Jährliche Ausleihstatistiken und beliebte Bücher",
+      "totalLoans": "Ausleihen gesamt",
+      "uniqueBooks": "Verschiedene Bücher",
+      "uniquePatrons": "Aktive Benutzer",
+      "monthlyBreakdown": "Monatliche Übersicht",
+      "topBooks": "Meistausgeliehene Bücher",
+      "noData": "Keine Ausleihdaten für dieses Jahr"
+    },
+    "bookHistory": {
+      "title": "Ausleihhistorie",
+      "totalLoans": "Ausleihen gesamt",
+      "noLoans": "Dieses Medium wurde noch nie ausgeliehen"
+    },
+    "table": {
+      "catalogId": "Katalognummer",
+      "title": "Titel",
+      "author": "Autor",
+      "patron": "Benutzer",
+      "checkoutDate": "Ausleihdatum",
+      "returnDate": "Rückgabedatum",
+      "status": "Status",
+      "loanCount": "Ausgeliehen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "returned": "Zurückgegeben",
+      "overdue": "Überfällig"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mär",
+      "apr": "Apr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dez"
+    }
   }
 }
