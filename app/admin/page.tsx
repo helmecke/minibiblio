@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { Package, Users2, BookOpen, TrendingUp } from "lucide-react";
+import { Package, Users2, BookOpen, AlertTriangle } from "lucide-react";
 
 interface CountResponse {
   count: number;
@@ -37,13 +37,40 @@ async function getCatalogCount(type?: string, status?: string): Promise<number> 
   }
 }
 
+async function getActiveLoansCount(): Promise<number> {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/python/loans/active/count", {
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data: CountResponse = await res.json();
+    return data.count;
+  } catch {
+    return 0;
+  }
+}
+
+async function getOverdueLoansCount(): Promise<number> {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/python/loans/overdue", {
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return Array.isArray(data) ? data.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export default async function AdminDashboard() {
   const session = await auth();
-  const [activePatrons, totalPatrons, totalCatalog, borrowedItems] = await Promise.all([
+  const [activePatrons, totalPatrons, totalCatalog, activeLoans, overdueLoans] = await Promise.all([
     getPatronCount("active"),
     getPatronCount(),
     getCatalogCount(),
-    getCatalogCount(undefined, "borrowed"),
+    getActiveLoansCount(),
+    getOverdueLoansCount(),
   ]);
 
   return (
@@ -81,23 +108,23 @@ export default async function AdminDashboard() {
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Borrowed</h3>
+            <h3 className="text-sm font-medium">Active Loans</h3>
             <Package className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">{borrowedItems}</div>
+          <div className="text-2xl font-bold">{activeLoans}</div>
           <p className="text-xs text-muted-foreground">
-            {borrowedItems === 0 ? "No active loans" : "Items currently borrowed"}
+            {activeLoans === 0 ? "No active loans" : "Items currently borrowed"}
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">This Month</h3>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-medium">Overdue</h3>
+            <AlertTriangle className={`h-4 w-4 ${overdueLoans > 0 ? "text-destructive" : "text-muted-foreground"}`} />
           </div>
-          <div className="text-2xl font-bold">0</div>
+          <div className={`text-2xl font-bold ${overdueLoans > 0 ? "text-destructive" : ""}`}>{overdueLoans}</div>
           <p className="text-xs text-muted-foreground">
-            Transactions this month
+            {overdueLoans === 0 ? "No overdue items" : "Items past due date"}
           </p>
         </div>
       </div>

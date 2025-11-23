@@ -6,6 +6,7 @@ import {
   Settings,
   PanelLeft,
   BookOpen,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +38,7 @@ export default function AdminLayout({
               <span className="sr-only">MiniBiblio</span>
             </Link>
             <NavItem href="/admin" icon={<Home className="h-5 w-5" />} label="Dashboard" />
+            <NavItem href="/admin/circulation" icon={<ArrowLeftRight className="h-5 w-5" />} label="Circulation" />
             <NavItem href="/admin/catalog" icon={<Package className="h-5 w-5" />} label="Catalog" />
             <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label="Patrons" />
           </nav>
@@ -73,6 +75,13 @@ export default function AdminLayout({
                   >
                     <Home className="h-5 w-5" />
                     Dashboard
+                  </Link>
+                  <Link
+                    href="/admin/circulation"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeftRight className="h-5 w-5" />
+                    Circulation
                   </Link>
                   <Link
                     href="/admin/catalog"

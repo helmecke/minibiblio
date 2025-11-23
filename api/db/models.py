@@ -2,8 +2,8 @@ import uuid
 import enum
 from datetime import datetime
 
-from sqlalchemy import String, Text, Integer, Enum, DateTime, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Text, Integer, Enum, DateTime, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from api.db.database import Base
@@ -28,6 +28,13 @@ class CatalogItemStatus(str, enum.Enum):
     borrowed = "borrowed"
     reserved = "reserved"
     damaged = "damaged"
+    lost = "lost"
+
+
+class LoanStatus(str, enum.Enum):
+    active = "active"
+    returned = "returned"
+    overdue = "overdue"
     lost = "lost"
 
 
@@ -114,3 +121,66 @@ class CatalogItemDB(Base):
         onupdate=func.now(),
         nullable=False,
     )
+
+
+class LoanDB(Base):
+    __tablename__ = "loans"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    loan_id: Mapped[str] = mapped_column(
+        String(20),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+    catalog_item_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("catalog_items.id"),
+        nullable=False,
+        index=True,
+    )
+    patron_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("patrons.id"),
+        nullable=False,
+        index=True,
+    )
+    checkout_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    due_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
+    return_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    status: Mapped[LoanStatus] = mapped_column(
+        Enum(LoanStatus),
+        nullable=False,
+        default=LoanStatus.active,
+        index=True,
+    )
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    # Relationships
+    catalog_item: Mapped["CatalogItemDB"] = relationship()
+    patron: Mapped["PatronDB"] = relationship()
