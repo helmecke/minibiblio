@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta, timezone
@@ -60,16 +60,30 @@ def _loan_to_response(db_loan: LoanDB) -> Loan:
 
 @router.get("", response_model=List[Loan])
 async def list_loans(
+    search: Optional[str] = Query(None, description="Search in loan_id, patron name, item title"),
     status: Optional[LoanStatus] = None,
     patron_id: Optional[str] = None,
     catalog_item_id: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Get all loans with optional filters."""
+    """Get all loans with optional search and filters."""
     query = select(LoanDB).options(
         selectinload(LoanDB.catalog_item),
         selectinload(LoanDB.patron),
     )
+
+    if search:
+        search_term = f"%{search}%"
+        query = query.join(LoanDB.patron).join(LoanDB.catalog_item).where(
+            or_(
+                LoanDB.loan_id.ilike(search_term),
+                PatronDB.first_name.ilike(search_term),
+                PatronDB.last_name.ilike(search_term),
+                PatronDB.membership_id.ilike(search_term),
+                CatalogItemDB.title.ilike(search_term),
+                CatalogItemDB.catalog_id.ilike(search_term),
+            )
+        )
 
     if status:
         query = query.where(LoanDB.status == status)
@@ -88,7 +102,7 @@ async def list_loans(
 
     query = query.order_by(LoanDB.checkout_date.desc())
     result = await db.execute(query)
-    loans = result.scalars().all()
+    loans = result.scalars().unique().all()
     return [_loan_to_response(loan) for loan in loans]
 
 

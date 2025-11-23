@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
-from typing import List
-from sqlalchemy import select, func
+from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import List, Optional
+from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
@@ -33,9 +33,30 @@ def _patron_to_response(db_patron: PatronDB) -> Patron:
 
 
 @router.get("", response_model=List[Patron])
-async def list_patrons(db: AsyncSession = Depends(get_db)):
-    """Get all patrons."""
-    result = await db.execute(select(PatronDB).order_by(PatronDB.created_at.desc()))
+async def list_patrons(
+    search: Optional[str] = Query(None, description="Search in membership_id, name, email"),
+    status: Optional[PatronStatus] = Query(None, description="Filter by status"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get all patrons with optional search and filter."""
+    query = select(PatronDB)
+
+    if search:
+        search_term = f"%{search}%"
+        query = query.where(
+            or_(
+                PatronDB.membership_id.ilike(search_term),
+                PatronDB.first_name.ilike(search_term),
+                PatronDB.last_name.ilike(search_term),
+                PatronDB.email.ilike(search_term),
+            )
+        )
+
+    if status:
+        query = query.where(PatronDB.status == status)
+
+    query = query.order_by(PatronDB.created_at.desc())
+    result = await db.execute(query)
     patrons = result.scalars().all()
     return [_patron_to_response(p) for p in patrons]
 
