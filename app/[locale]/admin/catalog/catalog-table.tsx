@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   Table,
@@ -71,9 +72,11 @@ function getStatusBadgeVariant(status: CatalogItem["status"]) {
 
 export function CatalogTable({ items }: CatalogTableProps) {
   const router = useRouter();
+  const t = useTranslations("catalog");
+  const tCommon = useTranslations("common");
 
   const handleDelete = async (itemId: string) => {
-    if (!confirm("Are you sure you want to delete this item?")) {
+    if (!confirm(t("confirmDelete"))) {
       return;
     }
 
@@ -89,7 +92,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
       router.refresh();
     } catch (error) {
       console.error("Error deleting item:", error);
-      alert("Failed to delete item");
+      alert(tCommon("error"));
     }
   };
 
@@ -97,9 +100,9 @@ export function CatalogTable({ items }: CatalogTableProps) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-10">
-          <p className="text-muted-foreground">No items found</p>
+          <p className="text-muted-foreground">{t("noItemsFound")}</p>
           <p className="text-sm text-muted-foreground">
-            Add your first book or media item to get started
+            {t("addFirstItem")}
           </p>
         </CardContent>
       </Card>
@@ -109,17 +112,17 @@ export function CatalogTable({ items }: CatalogTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Items ({items.length})</CardTitle>
+        <CardTitle>{t("allItems")} ({items.length})</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Catalog ID</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("catalogId")}</TableHead>
+              <TableHead>{t("title_field")}</TableHead>
+              <TableHead>{t("author")}</TableHead>
+              <TableHead>{t("type")}</TableHead>
+              <TableHead>{t("status")}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -135,12 +138,12 @@ export function CatalogTable({ items }: CatalogTableProps) {
                 <TableCell>{item.author || "-"}</TableCell>
                 <TableCell>
                   <Badge variant={getTypeBadgeVariant(item.type)}>
-                    {item.type}
+                    {t(`types.${item.type}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(item.status)}>
-                    {item.status}
+                    {t(`statuses.${item.status}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -148,7 +151,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">{tCommon("actions")}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -158,7 +161,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
                         }
                       >
                         <Eye className="mr-2 h-4 w-4" />
-                        Details
+                        {tCommon("details")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
@@ -166,7 +169,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
                         }
                       >
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        {tCommon("edit")}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -174,7 +177,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
                         className="text-destructive focus:text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {tCommon("delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

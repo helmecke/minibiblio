@@ -20,6 +20,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - **TypeScript 5** - Type-safe JavaScript
 - **Tailwind CSS 3** - Utility-first CSS framework
 - **Shadcn UI** - Component library (Radix UI + Tailwind)
+- **next-intl** - Internationalization (English + German)
 
 ### Backend
 - **FastAPI** - Python web framework (accessible at `/api/python/`)
@@ -38,11 +39,45 @@ MiniBiblio is a comprehensive library management system for small libraries.
 
 ## Architecture
 
-- Admin dashboard at `/admin` (protected by authentication)
-- Login page at `/login` with Google OAuth
+- Admin dashboard at `/[locale]/admin` (protected by authentication)
+- Login page at `/[locale]/login` with Google OAuth
 - FastAPI server mapped to `/api/python/` via Next.js rewrites
 - Next.js API routes at `/api/`
 - Python dependencies managed via `pyproject.toml` and `uv.lock`
+- Locale-based routing with `[locale]` dynamic segment (en, de)
+
+## Internationalization (i18n)
+
+### Setup
+- **Library**: next-intl
+- **Supported Locales**: English (en), German (de)
+- **Default Locale**: English
+- **Locale Prefix**: Always (URLs include locale, e.g., `/en/admin`, `/de/admin`)
+
+### Key Files
+- `i18n/config.ts` - Locale configuration and types
+- `i18n/request.ts` - Server-side i18n setup (getRequestConfig)
+- `i18n/navigation.ts` - Localized navigation helpers (Link, useRouter, etc.)
+- `middleware.ts` - Combined auth + i18n middleware
+- `messages/en.json` - English translations
+- `messages/de.json` - German translations
+
+### Translation Namespaces
+- `common` - Shared UI strings (save, cancel, delete, etc.)
+- `nav` - Navigation labels
+- `auth` - Authentication strings
+- `dashboard` - Dashboard page
+- `patrons` - Patron management
+- `catalog` - Catalog management
+- `circulation` - Loan management
+- `errors` - Error messages
+- `login` - Login page
+
+### Usage Patterns
+- **Server Components**: `getTranslations("namespace")`
+- **Client Components**: `useTranslations("namespace")`
+- **Navigation**: Import `Link`, `useRouter` from `@/i18n/navigation`
+- **Locale Detection**: `useLocale()` hook for locale-aware formatting
 
 ## Database
 
@@ -68,31 +103,94 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Edit**: `/admin/patrons/[id]/edit` - Update patron form
 - **Delete**: Via action menu with confirmation
 
-### Patron Model
-- `id` (UUID, auto-generated)
-- `membership_id` (string, auto-generated like "LIB-XXXXXXXX")
+### Catalog Management
+- **List**: `/admin/catalog` - Table with search, type/status filters
+- **Create**: Dialog modal via "Add Item" button
+- **Details**: `/admin/catalog/[id]` - View item information
+- **Edit**: `/admin/catalog/[id]/edit` - Update item form
+- **Delete**: Via action menu with confirmation
+- **Types**: book, dvd, cd, magazine, other
+- **Statuses**: available, borrowed, reserved, damaged, lost
+
+### Circulation (Loans)
+- **List**: `/admin/circulation` - All loans with status indicators
+- **Checkout**: Dialog to check out item to patron (sets item status to borrowed)
+- **Return**: Action to return item (sets item status to available)
+- **Extend**: Action to extend due date by 7 days
+- **Details**: `/admin/circulation/[id]` - View loan with linked item/patron
+- **Overdue**: Visual indicators for overdue items
+- **Dashboard**: Shows active loans and overdue counts
+
+## Database Models
+
+### PatronDB
+- `id` (UUID), `membership_id` (auto: "LIB-XXXXXXXX")
 - `first_name`, `last_name` (required)
 - `email`, `phone` (optional)
 - `status` (active/inactive/suspended)
-- `created_at`, `updated_at` (timestamps)
+- `created_at`, `updated_at`
+
+### CatalogItemDB
+- `id` (UUID), `catalog_id` (auto: "CAT-XXXXXXXX")
+- `type` (book/dvd/cd/magazine/other)
+- `title` (required), `author`, `isbn`, `publisher`, `year`
+- `description`, `genre`, `language`, `location`
+- `status` (available/borrowed/reserved/damaged/lost)
+- `created_at`, `updated_at`
+
+### LoanDB
+- `id` (UUID), `loan_id` (auto: "LN-XXXXXXXX")
+- `catalog_item_id`, `patron_id` (foreign keys)
+- `checkout_date`, `due_date`, `return_date`
+- `status` (active/returned/overdue/lost)
+- `notes`, `created_at`, `updated_at`
+
+## API Endpoints
+
+### Patrons (`/api/python/patrons`)
+- GET `/` - List patrons (filter by status)
+- GET `/count` - Count patrons
+- GET `/{id}` - Get patron details
+- POST `/` - Create patron
+- PUT `/{id}` - Update patron
+- DELETE `/{id}` - Delete patron
+
+### Catalog (`/api/python/catalog`)
+- GET `/` - List items (filter by type, status, search)
+- GET `/count` - Count items
+- GET `/{id}` - Get item details
+- POST `/` - Create item
+- PUT `/{id}` - Update item
+- DELETE `/{id}` - Delete item
+
+### Loans (`/api/python/loans`)
+- GET `/` - List loans (filter by status, patron, item)
+- GET `/count` - Count loans
+- GET `/active/count` - Count active loans
+- GET `/overdue` - List overdue loans
+- GET `/{id}` - Get loan details
+- POST `/checkout` - Check out item to patron
+- POST `/{id}/return` - Return item
+- POST `/{id}/extend` - Extend due date
 
 ## Key Files
 
 ### Backend
-- `api/config.py` - Settings from environment variables
-- `api/db/database.py` - Async SQLAlchemy engine and session
-- `api/db/models.py` - SQLAlchemy ORM models (PatronDB)
-- `api/models/patron.py` - Pydantic schemas
-- `api/routers/patrons.py` - CRUD endpoints
-- `alembic/` - Database migrations
+- `api/config.py` - Settings from environment
+- `api/db/database.py` - Async SQLAlchemy engine
+- `api/db/models.py` - ORM models (PatronDB, CatalogItemDB, LoanDB)
+- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py)
+- `api/routers/` - API routes (patrons.py, catalog.py, loans.py)
+- `alembic/versions/` - Database migrations
 
-### Frontend (Patrons)
-- `app/admin/patrons/page.tsx` - List page
-- `app/admin/patrons/patrons-table.tsx` - Table with actions
-- `app/admin/patrons/add-patron-dialog.tsx` - Create dialog
-- `app/admin/patrons/[id]/page.tsx` - Details page
-- `app/admin/patrons/[id]/edit/page.tsx` - Edit page
-- `app/admin/patrons/[id]/edit/edit-patron-form.tsx` - Edit form
+### Frontend
+- `app/[locale]/admin/page.tsx` - Dashboard with stats
+- `app/[locale]/admin/layout.tsx` - Admin layout with sidebar
+- `app/[locale]/admin/patrons/` - Patron management pages
+- `app/[locale]/admin/catalog/` - Catalog management pages
+- `app/[locale]/admin/circulation/` - Loan management pages
+- `i18n/` - Internationalization config (config.ts, request.ts, navigation.ts)
+- `messages/` - Translation files (en.json, de.json)
 
 ### Shadcn UI Components
-Located in `components/ui/`: button, badge, card, dialog, dropdown-menu, input, label, select, sheet, table, tooltip
+Located in `components/ui/`: button, badge, card, dialog, dropdown-menu, input, label, select, sheet, table, textarea, tooltip

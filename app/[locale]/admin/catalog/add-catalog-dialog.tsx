@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface FormData {
   type: string;
@@ -31,6 +33,7 @@ interface FormData {
   publisher: string;
   year: string;
   genre: string;
+  description: string;
   language: string;
   location: string;
   status: string;
@@ -38,6 +41,9 @@ interface FormData {
 
 export function AddCatalogDialog() {
   const router = useRouter();
+  const t = useTranslations("catalog");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +55,7 @@ export function AddCatalogDialog() {
     publisher: "",
     year: "",
     genre: "",
+    description: "",
     language: "English",
     location: "",
     status: "available",
@@ -68,6 +75,7 @@ export function AddCatalogDialog() {
         publisher: formData.publisher || null,
         year: formData.year ? parseInt(formData.year) : null,
         genre: formData.genre || null,
+        description: formData.description || null,
         language: formData.language,
         location: formData.location || null,
         status: formData.status,
@@ -81,7 +89,7 @@ export function AddCatalogDialog() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.detail || "Failed to create item");
+        throw new Error(data.detail || tErrors("failedToCreate", { resource: t("title") }));
       }
 
       setOpen(false);
@@ -93,13 +101,14 @@ export function AddCatalogDialog() {
         publisher: "",
         year: "",
         genre: "",
+        description: "",
         language: "English",
         location: "",
         status: "available",
       });
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : tErrors("anErrorOccurred"));
     } finally {
       setLoading(false);
     }
@@ -111,16 +120,16 @@ export function AddCatalogDialog() {
         <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Item
+            {t("addItem")}
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Catalog Item</DialogTitle>
+            <DialogTitle>{t("addItem")}</DialogTitle>
             <DialogDescription>
-              Add a new book or media item to the library catalog.
+              {t("addItemDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -132,7 +141,7 @@ export function AddCatalogDialog() {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="type" className="text-right">
-                Type
+                {t("type")}
               </Label>
               <Select
                 value={formData.type}
@@ -141,21 +150,21 @@ export function AddCatalogDialog() {
                 }
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t("selectType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="book">Book</SelectItem>
-                  <SelectItem value="dvd">DVD</SelectItem>
-                  <SelectItem value="cd">CD</SelectItem>
-                  <SelectItem value="magazine">Magazine</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="book">{t("types.book")}</SelectItem>
+                  <SelectItem value="dvd">{t("types.dvd")}</SelectItem>
+                  <SelectItem value="cd">{t("types.cd")}</SelectItem>
+                  <SelectItem value="magazine">{t("types.magazine")}</SelectItem>
+                  <SelectItem value="other">{t("types.other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
-                Title
+                {t("title_field")}
               </Label>
               <Input
                 id="title"
@@ -170,7 +179,7 @@ export function AddCatalogDialog() {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="author" className="text-right">
-                Author
+                {t("author")}
               </Label>
               <Input
                 id="author"
@@ -179,13 +188,13 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, author: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isbn" className="text-right">
-                ISBN
+                {t("isbn")}
               </Label>
               <Input
                 id="isbn"
@@ -194,13 +203,13 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, isbn: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="publisher" className="text-right">
-                Publisher
+                {t("publisher")}
               </Label>
               <Input
                 id="publisher"
@@ -209,13 +218,13 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, publisher: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="year" className="text-right">
-                Year
+                {t("year")}
               </Label>
               <Input
                 id="year"
@@ -225,13 +234,13 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, year: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="genre" className="text-right">
-                Genre
+                {t("genre")}
               </Label>
               <Input
                 id="genre"
@@ -240,13 +249,29 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, genre: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                {t("description_field")}
+              </Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                className="col-span-3"
+                placeholder={tCommon("optional")}
+                rows={3}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="location" className="text-right">
-                Location
+                {t("location")}
               </Label>
               <Input
                 id="location"
@@ -255,13 +280,13 @@ export function AddCatalogDialog() {
                   setFormData({ ...formData, location: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Shelf/Section (Optional)"
+                placeholder={t("locationPlaceholder")}
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="status" className="text-right">
-                Status
+                {t("status")}
               </Label>
               <Select
                 value={formData.status}
@@ -270,21 +295,21 @@ export function AddCatalogDialog() {
                 }
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="borrowed">Borrowed</SelectItem>
-                  <SelectItem value="reserved">Reserved</SelectItem>
-                  <SelectItem value="damaged">Damaged</SelectItem>
-                  <SelectItem value="lost">Lost</SelectItem>
+                  <SelectItem value="available">{t("statuses.available")}</SelectItem>
+                  <SelectItem value="borrowed">{t("statuses.borrowed")}</SelectItem>
+                  <SelectItem value="reserved">{t("statuses.reserved")}</SelectItem>
+                  <SelectItem value="damaged">{t("statuses.damaged")}</SelectItem>
+                  <SelectItem value="lost">{t("statuses.lost")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Item"}
+              {loading ? tCommon("loading") : t("createItem")}
             </Button>
           </DialogFooter>
         </form>

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 import { Package, Users2, BookOpen, AlertTriangle } from "lucide-react";
 
 interface CountResponse {
@@ -65,6 +66,7 @@ async function getOverdueLoansCount(): Promise<number> {
 
 export default async function AdminDashboard() {
   const session = await auth();
+  const t = await getTranslations("dashboard");
   const [activePatrons, totalPatrons, totalCatalog, activeLoans, overdueLoans] = await Promise.all([
     getPatronCount("active"),
     getPatronCount(),
@@ -76,9 +78,9 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">
-          Welcome back, {session?.user?.name || "Admin"}!
+          {t("welcome", { name: session?.user?.name || "Admin" })}
         </p>
       </div>
 
@@ -86,54 +88,54 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Catalog Items</h3>
+            <h3 className="text-sm font-medium">{t("catalogItems")}</h3>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="text-2xl font-bold">{totalCatalog}</div>
           <p className="text-xs text-muted-foreground">
-            {totalCatalog === 0 ? "No items added yet" : "Books and media"}
+            {totalCatalog === 0 ? t("noItemsAdded") : t("booksAndMedia")}
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Active Patrons</h3>
+            <h3 className="text-sm font-medium">{t("activePatrons")}</h3>
             <Users2 className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="text-2xl font-bold">{activePatrons}</div>
           <p className="text-xs text-muted-foreground">
-            {totalPatrons} total patrons
+            {t("totalPatrons", { count: totalPatrons })}
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Active Loans</h3>
+            <h3 className="text-sm font-medium">{t("activeLoans")}</h3>
             <Package className="h-4 w-4 text-muted-foreground" />
           </div>
           <div className="text-2xl font-bold">{activeLoans}</div>
           <p className="text-xs text-muted-foreground">
-            {activeLoans === 0 ? "No active loans" : "Items currently borrowed"}
+            {activeLoans === 0 ? t("noActiveLoans") : t("itemsCurrentlyBorrowed")}
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium">Overdue</h3>
+            <h3 className="text-sm font-medium">{t("overdue")}</h3>
             <AlertTriangle className={`h-4 w-4 ${overdueLoans > 0 ? "text-destructive" : "text-muted-foreground"}`} />
           </div>
           <div className={`text-2xl font-bold ${overdueLoans > 0 ? "text-destructive" : ""}`}>{overdueLoans}</div>
           <p className="text-xs text-muted-foreground">
-            {overdueLoans === 0 ? "No overdue items" : "Items past due date"}
+            {overdueLoans === 0 ? t("noOverdueItems") : t("itemsPastDueDate")}
           </p>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+        <h2 className="text-lg font-semibold mb-4">{t("quickActions")}</h2>
         <p className="text-muted-foreground">
-          Start by adding books to your library or inviting users.
+          {t("quickActionsDescription")}
         </p>
       </div>
     </div>

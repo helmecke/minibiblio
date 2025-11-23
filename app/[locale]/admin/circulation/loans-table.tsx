@@ -1,6 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
 import { MoreHorizontal, Eye, RotateCcw, CalendarPlus } from "lucide-react";
 import {
   Table,
@@ -63,10 +65,6 @@ function getStatusBadgeVariant(status: Loan["status"]) {
   }
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString();
-}
-
 function isOverdue(dueDate: string, status: string) {
   if (status !== "active") return false;
   return new Date(dueDate) < new Date();
@@ -74,9 +72,16 @@ function isOverdue(dueDate: string, status: string) {
 
 export function LoansTable({ loans }: LoansTableProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("circulation");
+  const tCommon = useTranslations("common");
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString(locale === "de" ? "de-DE" : "en-US");
+  };
 
   const handleReturn = async (loanId: string) => {
-    if (!confirm("Mark this item as returned?")) {
+    if (!confirm(t("confirmReturn"))) {
       return;
     }
 
@@ -94,12 +99,12 @@ export function LoansTable({ loans }: LoansTableProps) {
       router.refresh();
     } catch (error) {
       console.error("Error returning item:", error);
-      alert("Failed to return item");
+      alert(tCommon("error"));
     }
   };
 
   const handleExtend = async (loanId: string) => {
-    if (!confirm("Extend this loan by 7 days?")) {
+    if (!confirm(t("confirmExtend", { days: 7 }))) {
       return;
     }
 
@@ -117,7 +122,7 @@ export function LoansTable({ loans }: LoansTableProps) {
       router.refresh();
     } catch (error) {
       console.error("Error extending loan:", error);
-      alert("Failed to extend loan");
+      alert(tCommon("error"));
     }
   };
 
@@ -125,9 +130,9 @@ export function LoansTable({ loans }: LoansTableProps) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-10">
-          <p className="text-muted-foreground">No loans found</p>
+          <p className="text-muted-foreground">{t("noLoansFound")}</p>
           <p className="text-sm text-muted-foreground">
-            Check out an item to a patron to get started
+            {t("checkoutFirstItem")}
           </p>
         </CardContent>
       </Card>
@@ -137,18 +142,18 @@ export function LoansTable({ loans }: LoansTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Loans ({loans.length})</CardTitle>
+        <CardTitle>{t("allLoans")} ({loans.length})</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Loan ID</TableHead>
-              <TableHead>Item</TableHead>
-              <TableHead>Patron</TableHead>
-              <TableHead>Checkout</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("loanId")}</TableHead>
+              <TableHead>{t("item")}</TableHead>
+              <TableHead>{t("patron")}</TableHead>
+              <TableHead>{t("checkoutDate")}</TableHead>
+              <TableHead>{t("dueDate")}</TableHead>
+              <TableHead>{t("statuses.active").split(" ")[0]}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -193,8 +198,8 @@ export function LoansTable({ loans }: LoansTableProps) {
                     }
                   >
                     {isOverdue(loan.due_date, loan.status)
-                      ? "overdue"
-                      : loan.status}
+                      ? t("statuses.overdue")
+                      : t(`statuses.${loan.status}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -202,7 +207,7 @@ export function LoansTable({ loans }: LoansTableProps) {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">{tCommon("actions")}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -212,18 +217,18 @@ export function LoansTable({ loans }: LoansTableProps) {
                         }
                       >
                         <Eye className="mr-2 h-4 w-4" />
-                        Details
+                        {tCommon("details")}
                       </DropdownMenuItem>
                       {loan.status === "active" && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleExtend(loan.id)}>
                             <CalendarPlus className="mr-2 h-4 w-4" />
-                            Extend (7 days)
+                            {t("extendDays", { days: 7 })}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleReturn(loan.id)}>
                             <RotateCcw className="mr-2 h-4 w-4" />
-                            Return
+                            {t("return")}
                           </DropdownMenuItem>
                         </>
                       )}

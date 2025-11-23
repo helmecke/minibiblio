@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PatronsTable } from "./patrons-table";
 import { AddPatronDialog } from "./add-patron-dialog";
 
@@ -12,22 +13,24 @@ async function getPatrons() {
 }
 
 export default async function PatronsPage() {
+  const t = await getTranslations("patrons");
+  const tErrors = await getTranslations("errors");
   let patrons = [];
   let error = null;
 
   try {
     patrons = await getPatrons();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Failed to load patrons";
+    error = e instanceof Error ? e.message : tErrors("failedToLoad", { resource: t("title") });
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Patrons</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">
-            Manage library members and their information
+            {t("description")}
           </p>
         </div>
         <AddPatronDialog />
@@ -35,7 +38,7 @@ export default async function PatronsPage() {
 
       {error ? (
         <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
-          {error}. Make sure the FastAPI server is running.
+          {error}. {tErrors("serverNotRunning")}
         </div>
       ) : (
         <PatronsTable patrons={patrons} />

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   Home,
   Package,
@@ -18,12 +19,15 @@ import {
 import { NavItem } from "./nav-item";
 import { UserMenu } from "./user";
 import { Providers } from "./providers";
+import { LanguageSwitcher } from "./language-switcher";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("nav");
+
   return (
     <Providers>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -35,15 +39,15 @@ export default function AdminLayout({
               className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
             >
               <BookOpen className="h-4 w-4 transition-all group-hover:scale-110" />
-              <span className="sr-only">MiniBiblio</span>
+              <span className="sr-only">{t("minibiblio")}</span>
             </Link>
-            <NavItem href="/admin" icon={<Home className="h-5 w-5" />} label="Dashboard" />
-            <NavItem href="/admin/circulation" icon={<ArrowLeftRight className="h-5 w-5" />} label="Circulation" />
-            <NavItem href="/admin/catalog" icon={<Package className="h-5 w-5" />} label="Catalog" />
-            <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label="Patrons" />
+            <NavItem href="/admin" icon={<Home className="h-5 w-5" />} label={t("dashboard")} />
+            <NavItem href="/admin/circulation" icon={<ArrowLeftRight className="h-5 w-5" />} label={t("circulation")} />
+            <NavItem href="/admin/catalog" icon={<Package className="h-5 w-5" />} label={t("catalog")} />
+            <NavItem href="/admin/patrons" icon={<Users2 className="h-5 w-5" />} label={t("patrons")} />
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-            <NavItem href="/admin/settings" icon={<Settings className="h-5 w-5" />} label="Settings" />
+            <NavItem href="/admin/settings" icon={<Settings className="h-5 w-5" />} label={t("settings")} />
           </nav>
         </aside>
 
@@ -67,42 +71,42 @@ export default function AdminLayout({
                     className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                   >
                     <BookOpen className="h-5 w-5 transition-all group-hover:scale-110" />
-                    <span className="sr-only">MiniBiblio</span>
+                    <span className="sr-only">{t("minibiblio")}</span>
                   </Link>
                   <Link
                     href="/admin"
                     className="flex items-center gap-4 px-2.5 text-foreground"
                   >
                     <Home className="h-5 w-5" />
-                    Dashboard
+                    {t("dashboard")}
                   </Link>
                   <Link
                     href="/admin/circulation"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <ArrowLeftRight className="h-5 w-5" />
-                    Circulation
+                    {t("circulation")}
                   </Link>
                   <Link
                     href="/admin/catalog"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Package className="h-5 w-5" />
-                    Catalog
+                    {t("catalog")}
                   </Link>
                   <Link
                     href="/admin/patrons"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Users2 className="h-5 w-5" />
-                    Patrons
+                    {t("patrons")}
                   </Link>
                   <Link
                     href="/admin/settings"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Settings className="h-5 w-5" />
-                    Settings
+                    {t("settings")}
                   </Link>
                 </nav>
               </SheetContent>
@@ -110,6 +114,9 @@ export default function AdminLayout({
 
             {/* Breadcrumb placeholder */}
             <div className="flex-1" />
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {/* User Menu */}
             <UserMenu />

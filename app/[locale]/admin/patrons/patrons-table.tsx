@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   Table,
@@ -52,9 +53,11 @@ function getStatusBadgeVariant(status: Patron["status"]) {
 
 export function PatronsTable({ patrons }: PatronsTableProps) {
   const router = useRouter();
+  const t = useTranslations("patrons");
+  const tCommon = useTranslations("common");
 
   const handleDelete = async (patronId: string) => {
-    if (!confirm("Are you sure you want to delete this patron?")) {
+    if (!confirm(t("confirmDelete"))) {
       return;
     }
 
@@ -70,7 +73,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
       router.refresh();
     } catch (error) {
       console.error("Error deleting patron:", error);
-      alert("Failed to delete patron");
+      alert(tCommon("error"));
     }
   };
 
@@ -78,9 +81,9 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-10">
-          <p className="text-muted-foreground">No patrons found</p>
+          <p className="text-muted-foreground">{t("noPatronsFound")}</p>
           <p className="text-sm text-muted-foreground">
-            Add your first patron to get started
+            {t("addFirstPatron")}
           </p>
         </CardContent>
       </Card>
@@ -90,17 +93,17 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Patrons ({patrons.length})</CardTitle>
+        <CardTitle>{t("allPatrons")} ({patrons.length})</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Member ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("membershipId")}</TableHead>
+              <TableHead>{t("name")}</TableHead>
+              <TableHead>{t("email")}</TableHead>
+              <TableHead>{t("phone")}</TableHead>
+              <TableHead>{t("status")}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -117,7 +120,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                 <TableCell>{patron.phone || "-"}</TableCell>
                 <TableCell>
                   <Badge variant={getStatusBadgeVariant(patron.status)}>
-                    {patron.status}
+                    {t(`statuses.${patron.status}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -125,7 +128,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">{tCommon("actions")}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -135,7 +138,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                         }
                       >
                         <Eye className="mr-2 h-4 w-4" />
-                        Details
+                        {tCommon("details")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
@@ -143,7 +146,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                         }
                       >
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        {tCommon("edit")}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -151,7 +154,7 @@ export function PatronsTable({ patrons }: PatronsTableProps) {
                         className="text-destructive focus:text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {tCommon("delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

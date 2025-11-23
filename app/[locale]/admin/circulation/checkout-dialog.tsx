@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -42,6 +42,8 @@ interface CatalogItem {
 
 export function CheckoutDialog() {
   const router = useRouter();
+  const t = useTranslations("circulation");
+  const tErrors = useTranslations("errors");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +93,7 @@ export function CheckoutDialog() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.detail || "Failed to checkout item");
+        throw new Error(data.detail || tErrors("failedToCreate", { resource: t("title") }));
       }
 
       setOpen(false);
@@ -103,7 +105,7 @@ export function CheckoutDialog() {
       });
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : tErrors("anErrorOccurred"));
     } finally {
       setLoading(false);
     }
@@ -115,16 +117,16 @@ export function CheckoutDialog() {
         <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Checkout
+            {t("checkout")}
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Checkout Item</DialogTitle>
+            <DialogTitle>{t("checkoutItem")}</DialogTitle>
             <DialogDescription>
-              Check out an item to a patron.
+              {t("checkoutDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -136,7 +138,7 @@ export function CheckoutDialog() {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="patron" className="text-right">
-                Patron
+                {t("patron")}
               </Label>
               <Select
                 value={formData.patron_id}
@@ -146,7 +148,7 @@ export function CheckoutDialog() {
                 required
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select patron" />
+                  <SelectValue placeholder={t("selectPatron")} />
                 </SelectTrigger>
                 <SelectContent>
                   {patrons.map((patron) => (
@@ -160,7 +162,7 @@ export function CheckoutDialog() {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="item" className="text-right">
-                Item
+                {t("item")}
               </Label>
               <Select
                 value={formData.catalog_item_id}
@@ -170,7 +172,7 @@ export function CheckoutDialog() {
                 required
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select item" />
+                  <SelectValue placeholder={t("selectItem")} />
                 </SelectTrigger>
                 <SelectContent>
                   {items.map((item) => (
@@ -184,7 +186,7 @@ export function CheckoutDialog() {
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="due_days" className="text-right">
-                Loan Period
+                {t("loanPeriod")}
               </Label>
               <Select
                 value={formData.due_days}
@@ -193,20 +195,20 @@ export function CheckoutDialog() {
                 }
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select period" />
+                  <SelectValue placeholder={t("selectPeriod")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7">7 days</SelectItem>
-                  <SelectItem value="14">14 days (default)</SelectItem>
-                  <SelectItem value="21">21 days</SelectItem>
-                  <SelectItem value="28">28 days</SelectItem>
+                  <SelectItem value="7">{t("days", { count: 7 })}</SelectItem>
+                  <SelectItem value="14">{t("daysDefault", { count: 14 })}</SelectItem>
+                  <SelectItem value="21">{t("days", { count: 21 })}</SelectItem>
+                  <SelectItem value="28">{t("days", { count: 28 })}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="notes" className="text-right">
-                Notes
+                {t("notes")}
               </Label>
               <Textarea
                 id="notes"
@@ -215,7 +217,7 @@ export function CheckoutDialog() {
                   setFormData({ ...formData, notes: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional notes"
+                placeholder={t("notesPlaceholder")}
                 rows={2}
               />
             </div>
@@ -225,7 +227,7 @@ export function CheckoutDialog() {
               type="submit"
               disabled={loading || !formData.patron_id || !formData.catalog_item_id}
             >
-              {loading ? "Processing..." : "Checkout"}
+              {loading ? t("processing") : t("checkout")}
             </Button>
           </DialogFooter>
         </form>

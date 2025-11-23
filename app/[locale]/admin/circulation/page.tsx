@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { LoansTable } from "./loans-table";
 import { CheckoutDialog } from "./checkout-dialog";
 
@@ -12,22 +13,24 @@ async function getLoans() {
 }
 
 export default async function CirculationPage() {
+  const t = await getTranslations("circulation");
+  const tErrors = await getTranslations("errors");
   let loans = [];
   let error = null;
 
   try {
     loans = await getLoans();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Failed to load loans";
+    error = e instanceof Error ? e.message : tErrors("failedToLoad", { resource: t("title") });
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Circulation</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">
-            Check out, return, and manage loans
+            {t("description")}
           </p>
         </div>
         <CheckoutDialog />
@@ -35,7 +38,7 @@ export default async function CirculationPage() {
 
       {error ? (
         <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
-          {error}. Make sure the FastAPI server is running.
+          {error}. {tErrors("serverNotRunning")}
         </div>
       ) : (
         <LoansTable loans={loans} />

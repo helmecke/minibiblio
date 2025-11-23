@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +34,9 @@ interface FormData {
 
 export function AddPatronDialog() {
   const router = useRouter();
+  const t = useTranslations("patrons");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +70,7 @@ export function AddPatronDialog() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.detail || "Failed to create patron");
+        throw new Error(data.detail || tErrors("failedToCreate", { resource: t("title") }));
       }
 
       setOpen(false);
@@ -79,7 +83,7 @@ export function AddPatronDialog() {
       });
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : tErrors("anErrorOccurred"));
     } finally {
       setLoading(false);
     }
@@ -91,17 +95,16 @@ export function AddPatronDialog() {
         <Button size="sm" className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-            Add Patron
+            {t("addPatron")}
           </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add New Patron</DialogTitle>
+            <DialogTitle>{t("addPatron")}</DialogTitle>
             <DialogDescription>
-              Create a new library patron. A membership ID will be generated
-              automatically.
+              {t("addPatronDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -112,7 +115,7 @@ export function AddPatronDialog() {
             )}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="first_name" className="text-right">
-                First Name
+                {t("firstName")}
               </Label>
               <Input
                 id="first_name"
@@ -126,7 +129,7 @@ export function AddPatronDialog() {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="last_name" className="text-right">
-                Last Name
+                {t("lastName")}
               </Label>
               <Input
                 id="last_name"
@@ -140,7 +143,7 @@ export function AddPatronDialog() {
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="email" className="text-right">
-                Email
+                {t("email")}
               </Label>
               <Input
                 id="email"
@@ -150,12 +153,12 @@ export function AddPatronDialog() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="phone" className="text-right">
-                Phone
+                {t("phone")}
               </Label>
               <Input
                 id="phone"
@@ -165,12 +168,12 @@ export function AddPatronDialog() {
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 className="col-span-3"
-                placeholder="Optional"
+                placeholder={tCommon("optional")}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="status" className="text-right">
-                Status
+                {t("status")}
               </Label>
               <Select
                 value={formData.status}
@@ -179,19 +182,19 @@ export function AddPatronDialog() {
                 }
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="active">{t("statuses.active")}</SelectItem>
+                  <SelectItem value="inactive">{t("statuses.inactive")}</SelectItem>
+                  <SelectItem value="suspended">{t("statuses.suspended")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Patron"}
+              {loading ? t("creating") : t("createPatron")}
             </Button>
           </DialogFooter>
         </form>
