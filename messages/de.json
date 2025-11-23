@@ -98,7 +98,7 @@
     "itemDetails": "Mediendetails",
     "allItems": "Alle Medien",
     "noItemsFound": "Keine Einträge gefunden",
-    "searchPlaceholder": "Nach Titel, Autor, ISBN suchen...",
+    "searchPlaceholder": "Nach Katalognummer, Titel, Autor, ISBN suchen...",
     "addFirstItem": "Fügen Sie Ihr erstes Buch oder Medium hinzu",
     "catalogId": "Katalognummer",
     "selectType": "Typ auswählen",

@@ -44,7 +44,7 @@ def _item_to_response(db_item: CatalogItemDB) -> CatalogItem:
 async def list_catalog_items(
     type: Optional[CatalogItemType] = None,
     status: Optional[CatalogItemStatus] = None,
-    search: Optional[str] = Query(None, description="Search in title, author, ISBN"),
+    search: Optional[str] = Query(None, description="Search in catalog ID, title, author, ISBN"),
     db: AsyncSession = Depends(get_db),
 ):
     """Get all catalog items with optional filters."""
@@ -61,6 +61,7 @@ async def list_catalog_items(
                 CatalogItemDB.title.ilike(search_term),
                 CatalogItemDB.author.ilike(search_term),
                 CatalogItemDB.isbn.ilike(search_term),
+                CatalogItemDB.catalog_id.ilike(search_term),
             )
         )
 

@@ -98,7 +98,7 @@
     "itemDetails": "Item Details",
     "allItems": "All Items",
     "noItemsFound": "No items found",
-    "searchPlaceholder": "Search by title, author, ISBN...",
+    "searchPlaceholder": "Search by catalog ID, title, author, ISBN...",
     "addFirstItem": "Add your first book or media item to get started",
     "catalogId": "Catalog ID",
     "selectType": "Select type",
