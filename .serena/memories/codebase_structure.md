@@ -25,11 +25,13 @@ minibiblio/
 │   │   │   │   ├── catalog-table.tsx
 │   │   │   │   ├── add-catalog-dialog.tsx
 │   │   │   │   └── [id]/       # Item details/edit
-│   │   │   └── circulation/    # Loan management
-│   │   │       ├── page.tsx    # Loans list
-│   │   │       ├── loans-table.tsx
-│   │   │       ├── checkout-dialog.tsx
-│   │   │       └── [id]/       # Loan details
+│   │   │   ├── circulation/    # Loan management
+│   │   │   │   ├── page.tsx    # Loans list
+│   │   │   │   ├── loans-table.tsx
+│   │   │   │   ├── checkout-dialog.tsx
+│   │   │   │   └── [id]/       # Loan details
+│   │   │   └── import/         # CSV import
+│   │   │       └── page.tsx    # Import page with upload/preview/import
 │   │   └── login/              # Login page
 │   ├── globals.css             # Global styles
 │   └── layout.tsx              # Root layout
@@ -43,11 +45,13 @@ minibiblio/
 │   ├── models/                 # Pydantic schemas
 │   │   ├── patron.py
 │   │   ├── catalog.py
-│   │   └── loan.py
+│   │   ├── loan.py
+│   │   └── import_models.py    # Import/export schemas
 │   └── routers/                # API routes
 │       ├── patrons.py
 │       ├── catalog.py
-│       └── loans.py
+│       ├── loans.py
+│       └── import_router.py    # CSV import endpoints
 │
 ├── alembic/                    # Database migrations
 │   ├── env.py                  # Migration config

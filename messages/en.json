@@ -29,6 +29,7 @@
     "patrons": "Patrons",
     "catalog": "Catalog",
     "circulation": "Circulation",
+    "import": "Import",
     "settings": "Settings",
     "minibiblio": "MiniBiblio"
   },
@@ -187,5 +188,46 @@
     "title": "Sign in to MiniBiblio",
     "description": "Access your library management dashboard",
     "continueWith": "Continue with {provider}"
+  },
+  "import": {
+    "title": "Import Catalog",
+    "description": "Import books and media from CSV files",
+    "upload": "Upload CSV File",
+    "uploadDescription": "Upload a CSV file with catalog items to import",
+    "dropOrClick": "Drop a CSV file here or click to browse",
+    "csvOnly": "Only CSV files are supported",
+    "processing": "Processing file...",
+    "previewDescription": "{count} rows found in file",
+    "validRows": "{count} valid",
+    "warningRows": "{count} warnings",
+    "errorRows": "{count} errors",
+    "columnsDetected": "Columns detected",
+    "inventoryNumber": "Inventory No.",
+    "titleColumn": "Title",
+    "author": "Author",
+    "publisher": "Publisher",
+    "genre": "Genre",
+    "isbn": "ISBN",
+    "showingFirst": "Showing first {shown} of {total} rows",
+    "options": "Import Options",
+    "duplicateHandling": "Duplicate Handling",
+    "duplicateDescription": "How to handle items with existing inventory numbers",
+    "duplicates": {
+      "skip": "Skip duplicates",
+      "update": "Update existing items",
+      "create": "Always create new"
+    },
+    "import": "Import",
+    "importing": "Importing...",
+    "importComplete": "Import Complete",
+    "results": {
+      "created": "Created",
+      "updated": "Updated",
+      "skipped": "Skipped",
+      "errors": "Errors"
+    },
+    "errorDetails": "Error Details",
+    "row": "Row",
+    "importAnother": "Import Another File"
   }
 }

@@ -29,6 +29,7 @@
     "patrons": "Benutzer",
     "catalog": "Katalog",
     "circulation": "Ausleihe",
+    "import": "Import",
     "settings": "Einstellungen",
     "minibiblio": "MiniBiblio"
   },
@@ -187,5 +188,46 @@
     "title": "Bei MiniBiblio anmelden",
     "description": "Zugang zu Ihrem Bibliotheksverwaltungs-Dashboard",
     "continueWith": "Weiter mit {provider}"
+  },
+  "import": {
+    "title": "Katalog importieren",
+    "description": "Bücher und Medien aus CSV-Dateien importieren",
+    "upload": "CSV-Datei hochladen",
+    "uploadDescription": "Laden Sie eine CSV-Datei mit Katalogeinträgen hoch",
+    "dropOrClick": "CSV-Datei hierher ziehen oder klicken zum Durchsuchen",
+    "csvOnly": "Nur CSV-Dateien werden unterstützt",
+    "processing": "Datei wird verarbeitet...",
+    "previewDescription": "{count} Zeilen in Datei gefunden",
+    "validRows": "{count} gültig",
+    "warningRows": "{count} Warnungen",
+    "errorRows": "{count} Fehler",
+    "columnsDetected": "Erkannte Spalten",
+    "inventoryNumber": "Inventarnr.",
+    "titleColumn": "Titel",
+    "author": "Autor",
+    "publisher": "Verlag",
+    "genre": "Genre",
+    "isbn": "ISBN",
+    "showingFirst": "Zeige erste {shown} von {total} Zeilen",
+    "options": "Import-Optionen",
+    "duplicateHandling": "Duplikatbehandlung",
+    "duplicateDescription": "Wie mit Einträgen mit vorhandenen Inventarnummern umgegangen werden soll",
+    "duplicates": {
+      "skip": "Duplikate überspringen",
+      "update": "Vorhandene aktualisieren",
+      "create": "Immer neu erstellen"
+    },
+    "import": "Importieren",
+    "importing": "Wird importiert...",
+    "importComplete": "Import abgeschlossen",
+    "results": {
+      "created": "Erstellt",
+      "updated": "Aktualisiert",
+      "skipped": "Übersprungen",
+      "errors": "Fehler"
+    },
+    "errorDetails": "Fehlerdetails",
+    "row": "Zeile",
+    "importAnother": "Weitere Datei importieren"
   }
 }

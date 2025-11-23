@@ -70,6 +70,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - `patrons` - Patron management
 - `catalog` - Catalog management
 - `circulation` - Loan management
+- `import` - CSV import feature
 - `errors` - Error messages
 - `login` - Login page
 
@@ -120,6 +121,14 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Details**: `/admin/circulation/[id]` - View loan with linked item/patron
 - **Overdue**: Visual indicators for overdue items
 - **Dashboard**: Shows active loans and overdue counts
+
+### CSV Import
+- **Page**: `/admin/import` - Import catalog items from CSV files
+- **Preview**: Upload CSV → validate rows → show preview with status
+- **Column Detection**: Auto-detects Titel, Autor/Verlag, Genres, InventarNr., ISBN
+- **Validation**: Checks required fields, ISBN format
+- **Duplicate Handling**: Skip, update existing, or always create new
+- **Encoding Support**: UTF-8-sig and latin-1 fallback for German characters
 
 ## Database Models
 
@@ -173,14 +182,18 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - POST `/{id}/return` - Return item
 - POST `/{id}/extend` - Extend due date
 
+### Import (`/api/python/import`)
+- POST `/catalog/preview` - Preview CSV file (multipart/form-data)
+- POST `/catalog` - Import catalog items from CSV (multipart/form-data, query params: duplicate_handling, default_language)
+
 ## Key Files
 
 ### Backend
 - `api/config.py` - Settings from environment
 - `api/db/database.py` - Async SQLAlchemy engine
 - `api/db/models.py` - ORM models (PatronDB, CatalogItemDB, LoanDB)
-- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py)
-- `api/routers/` - API routes (patrons.py, catalog.py, loans.py)
+- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py, import_models.py)
+- `api/routers/` - API routes (patrons.py, catalog.py, loans.py, import_router.py)
 - `alembic/versions/` - Database migrations
 
 ### Frontend
@@ -189,6 +202,7 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - `app/[locale]/admin/patrons/` - Patron management pages
 - `app/[locale]/admin/catalog/` - Catalog management pages
 - `app/[locale]/admin/circulation/` - Loan management pages
+- `app/[locale]/admin/import/` - CSV import page
 - `i18n/` - Internationalization config (config.ts, request.ts, navigation.ts)
 - `messages/` - Translation files (en.json, de.json)
 

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routers.patrons import router as patrons_router
 from api.routers.catalog import router as catalog_router
 from api.routers.loans import router as loans_router
+from api.routers.import_router import router as import_router
 from api.db.database import engine
 
 
@@ -36,6 +37,7 @@ app.add_middleware(
 app.include_router(patrons_router, prefix="/api/python")
 app.include_router(catalog_router, prefix="/api/python")
 app.include_router(loans_router, prefix="/api/python")
+app.include_router(import_router, prefix="/api/python")
 
 
 @app.get("/api/python/healthcheck")
