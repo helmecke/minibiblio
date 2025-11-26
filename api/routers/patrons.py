@@ -26,6 +26,8 @@ def _patron_to_response(db_patron: PatronDB) -> Patron:
         last_name=db_patron.last_name,
         email=db_patron.email,
         phone=db_patron.phone,
+        address=db_patron.address,
+        birthdate=db_patron.birthdate,
         status=db_patron.status,
         created_at=db_patron.created_at,
         updated_at=db_patron.updated_at,

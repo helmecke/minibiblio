@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import Link from "next/link";
 import { MoreHorizontal, Eye, Pencil, Trash2, BookUp } from "lucide-react";
 import {
   Table,
@@ -225,9 +226,22 @@ export function CatalogTable({ items }: CatalogTableProps) {
                   {item.catalog_id}
                 </TableCell>
                 <TableCell className="font-medium max-w-[300px] truncate">
-                  {item.title}
+                  <Link href={`/admin/catalog/${item.id}`} className="hover:underline">
+                    {item.title}
+                  </Link>
                 </TableCell>
-                <TableCell>{item.author || "-"}</TableCell>
+                <TableCell>
+                  {item.author ? (
+                    <Link
+                      href={`/admin/catalog/author/${encodeURIComponent(item.author)}`}
+                      className="hover:underline"
+                    >
+                      {item.author}
+                    </Link>
+                  ) : (
+                    "-"
+                  )}
+                </TableCell>
                 <TableCell>
                   <Badge variant={getTypeBadgeVariant(item.type)}>
                     {t(`types.${item.type}`)}

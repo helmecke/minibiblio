@@ -28,6 +28,8 @@ interface Patron {
   last_name: string;
   email?: string;
   phone?: string;
+  address?: string;
+  birthdate?: string;
   membership_id: string;
   status: "active" | "inactive" | "suspended";
   created_at: string;

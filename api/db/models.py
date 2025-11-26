@@ -1,8 +1,8 @@
 import uuid
 import enum
-from datetime import datetime
+from datetime import datetime, date
 
-from sqlalchemy import String, Text, Integer, Enum, DateTime, ForeignKey, func
+from sqlalchemy import String, Text, Integer, Enum, DateTime, Date, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -56,6 +56,8 @@ class PatronDB(Base):
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    birthdate: Mapped[date | None] = mapped_column(Date, nullable=True)
     status: Mapped[PatronStatus] = mapped_column(
         Enum(PatronStatus),
         nullable=False,

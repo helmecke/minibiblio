@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RotateCcw, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,25 @@ interface LoanActionsProps {
   loanId: string;
 }
 
+interface LoanPeriodSettings {
+  default_period: number;
+  available_periods: number[];
+  extension_period: number;
+}
+
 export function LoanActions({ loanId }: LoanActionsProps) {
   const router = useRouter();
+  const [extensionDays, setExtensionDays] = useState(7);
+
+  useEffect(() => {
+    // Fetch loan period settings
+    fetch("/api/python/settings/loan-periods/config")
+      .then((res) => res.json())
+      .then((data: LoanPeriodSettings) => {
+        setExtensionDays(data.extension_period);
+      })
+      .catch((err) => console.error("Error fetching loan settings:", err));
+  }, []);
 
   const handleReturn = async () => {
     if (!confirm("Mark this item as returned?")) {
@@ -35,7 +53,7 @@ export function LoanActions({ loanId }: LoanActionsProps) {
   };
 
   const handleExtend = async () => {
-    if (!confirm("Extend this loan by 7 days?")) {
+    if (!confirm(`Extend this loan by ${extensionDays} days?`)) {
       return;
     }
 
@@ -43,7 +61,7 @@ export function LoanActions({ loanId }: LoanActionsProps) {
       const res = await fetch(`/api/python/loans/${loanId}/extend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ additional_days: 7 }),
+        body: JSON.stringify({ additional_days: extensionDays }),
       });
 
       if (!res.ok) {
@@ -61,7 +79,7 @@ export function LoanActions({ loanId }: LoanActionsProps) {
     <div className="flex gap-2">
       <Button variant="outline" onClick={handleExtend}>
         <CalendarPlus className="mr-2 h-4 w-4" />
-        Extend (7 days)
+        Extend ({extensionDays} days)
       </Button>
       <Button onClick={handleReturn}>
         <RotateCcw className="mr-2 h-4 w-4" />

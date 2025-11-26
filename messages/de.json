@@ -76,6 +76,10 @@
     "lastName": "Nachname",
     "email": "E-Mail",
     "phone": "Telefon",
+    "address": "Adresse",
+    "addressPlaceholder": "Straße, Stadt, Postleitzahl...",
+    "birthdate": "Geburtsdatum",
+    "birthdatePlaceholder": "Geburtsdatum auswählen",
     "status": "Status",
     "created": "Erstellt",
     "updated": "Zuletzt aktualisiert",
@@ -101,6 +105,11 @@
     "noItemsFound": "Keine Einträge gefunden",
     "searchPlaceholder": "Nach Katalognummer, Titel, Autor, ISBN suchen...",
     "addFirstItem": "Fügen Sie Ihr erstes Buch oder Medium hinzu",
+    "itemsByAuthor": "Medien von {author}",
+    "noItemsByAuthor": "Keine Medien von diesem Autor gefunden",
+    "itemCountByAuthor": "{count} {count, plural, one {Medium} other {Medien}} gefunden",
+    "filteringByAuthor": "Gefiltert nach Autor: {author}",
+    "clearFilter": "Filter löschen",
     "catalogId": "Katalognummer",
     "selectType": "Typ auswählen",
     "selectStatus": "Status auswählen",
@@ -205,6 +214,16 @@
       "reset": "Zurücksetzen",
       "preview": "Nächste Katalognummer:",
       "yearInfo": "Aktuelles Jahr: {year}"
+    },
+    "loanPeriods": {
+      "title": "Leihfristen",
+      "description": "Standardleihfristen und Verlängerungseinstellungen konfigurieren",
+      "defaultPeriod": "Standard-Leihfrist (Tage)",
+      "defaultPeriodHelp": "Anzahl der Tage für die Standard-Leihfrist",
+      "availablePeriods": "Verfügbare Fristen",
+      "availablePeriodsHelp": "Durch Kommas getrennte Liste verfügbarer Leihfristen in Tagen (z.B. 7, 14, 21, 28)",
+      "extensionPeriod": "Verlängerungsfrist (Tage)",
+      "extensionPeriodHelp": "Anzahl der Tage, um die eine Ausleihe bei Verlängerung verlängert wird"
     }
   },
   "import": {

@@ -40,6 +40,12 @@ interface CatalogItem {
   status: string;
 }
 
+interface LoanPeriodSettings {
+  default_period: number;
+  available_periods: number[];
+  extension_period: number;
+}
+
 export function CheckoutDialog() {
   const router = useRouter();
   const t = useTranslations("circulation");
@@ -49,6 +55,7 @@ export function CheckoutDialog() {
   const [error, setError] = useState<string | null>(null);
   const [patrons, setPatrons] = useState<Patron[]>([]);
   const [items, setItems] = useState<CatalogItem[]>([]);
+  const [loanSettings, setLoanSettings] = useState<LoanPeriodSettings | null>(null);
   const [formData, setFormData] = useState({
     patron_id: "",
     catalog_item_id: "",
@@ -69,6 +76,18 @@ export function CheckoutDialog() {
         .then((res) => res.json())
         .then((data) => setItems(data))
         .catch((err) => console.error("Error fetching catalog items:", err));
+
+      // Fetch loan period settings
+      fetch("/api/python/settings/loan-periods/config")
+        .then((res) => res.json())
+        .then((data: LoanPeriodSettings) => {
+          setLoanSettings(data);
+          setFormData((prev) => ({
+            ...prev,
+            due_days: String(data.default_period),
+          }));
+        })
+        .catch((err) => console.error("Error fetching loan settings:", err));
     }
   }, [open]);
 
@@ -100,7 +119,7 @@ export function CheckoutDialog() {
       setFormData({
         patron_id: "",
         catalog_item_id: "",
-        due_days: "14",
+        due_days: String(loanSettings?.default_period || 14),
         notes: "",
       });
       router.refresh();
@@ -198,10 +217,13 @@ export function CheckoutDialog() {
                   <SelectValue placeholder={t("selectPeriod")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7">{t("days", { count: 7 })}</SelectItem>
-                  <SelectItem value="14">{t("daysDefault", { count: 14 })}</SelectItem>
-                  <SelectItem value="21">{t("days", { count: 21 })}</SelectItem>
-                  <SelectItem value="28">{t("days", { count: 28 })}</SelectItem>
+                  {loanSettings?.available_periods.map((days) => (
+                    <SelectItem key={days} value={String(days)}>
+                      {days === loanSettings.default_period
+                        ? t("daysDefault", { count: days })
+                        : t("days", { count: days })}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

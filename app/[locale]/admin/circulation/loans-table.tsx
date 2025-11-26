@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
@@ -50,6 +51,12 @@ interface LoansTableProps {
   loans: Loan[];
 }
 
+interface LoanPeriodSettings {
+  default_period: number;
+  available_periods: number[];
+  extension_period: number;
+}
+
 function getStatusBadgeVariant(status: Loan["status"]) {
   switch (status) {
     case "active":
@@ -75,6 +82,17 @@ export function LoansTable({ loans }: LoansTableProps) {
   const locale = useLocale();
   const t = useTranslations("circulation");
   const tCommon = useTranslations("common");
+  const [extensionDays, setExtensionDays] = useState(7);
+
+  useEffect(() => {
+    // Fetch loan period settings
+    fetch("/api/python/settings/loan-periods/config")
+      .then((res) => res.json())
+      .then((data: LoanPeriodSettings) => {
+        setExtensionDays(data.extension_period);
+      })
+      .catch((err) => console.error("Error fetching loan settings:", err));
+  }, []);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString(locale === "de" ? "de-DE" : "en-US");
@@ -104,7 +122,7 @@ export function LoansTable({ loans }: LoansTableProps) {
   };
 
   const handleExtend = async (loanId: string) => {
-    if (!confirm(t("confirmExtend", { days: 7 }))) {
+    if (!confirm(t("confirmExtend", { days: extensionDays }))) {
       return;
     }
 
@@ -112,7 +130,7 @@ export function LoansTable({ loans }: LoansTableProps) {
       const res = await fetch(`/api/python/loans/${loanId}/extend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ additional_days: 7 }),
+        body: JSON.stringify({ additional_days: extensionDays }),
       });
 
       if (!res.ok) {
@@ -224,7 +242,7 @@ export function LoansTable({ loans }: LoansTableProps) {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleExtend(loan.id)}>
                             <CalendarPlus className="mr-2 h-4 w-4" />
-                            {t("extendDays", { days: 7 })}
+                            {t("extendDays", { days: extensionDays })}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleReturn(loan.id)}>
                             <RotateCcw className="mr-2 h-4 w-4" />

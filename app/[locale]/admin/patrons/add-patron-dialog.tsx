@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -29,6 +31,8 @@ interface FormData {
   last_name: string;
   email: string;
   phone: string;
+  address: string;
+  birthdate: Date | undefined;
   status: string;
 }
 
@@ -45,6 +49,8 @@ export function AddPatronDialog() {
     last_name: "",
     email: "",
     phone: "",
+    address: "",
+    birthdate: undefined,
     status: "active",
   });
 
@@ -59,6 +65,8 @@ export function AddPatronDialog() {
         last_name: formData.last_name,
         email: formData.email || null,
         phone: formData.phone || null,
+        address: formData.address || null,
+        birthdate: formData.birthdate ? formData.birthdate.toISOString().split('T')[0] : null,
         status: formData.status,
       };
 
@@ -79,6 +87,8 @@ export function AddPatronDialog() {
         last_name: "",
         email: "",
         phone: "",
+        address: "",
+        birthdate: undefined,
         status: "active",
       });
       router.refresh();
@@ -170,6 +180,35 @@ export function AddPatronDialog() {
                 className="col-span-3"
                 placeholder={tCommon("optional")}
               />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="address" className="text-right">
+                {t("address")}
+              </Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+                className="col-span-3"
+                placeholder={t("addressPlaceholder")}
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="birthdate" className="text-right">
+                {t("birthdate")}
+              </Label>
+              <div className="col-span-3">
+                <DatePicker
+                  value={formData.birthdate}
+                  onChange={(date) =>
+                    setFormData({ ...formData, birthdate: date })
+                  }
+                  placeholder={t("birthdatePlaceholder")}
+                />
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="status" className="text-right">

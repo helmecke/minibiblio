@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
 from typing import Optional
 
@@ -15,6 +15,8 @@ class PatronBase(BaseModel):
     last_name: str
     email: Optional[str] = None
     phone: Optional[str] = None
+    address: Optional[str] = None
+    birthdate: Optional[date] = None
     status: PatronStatus = PatronStatus.active
 
 
@@ -27,6 +29,8 @@ class PatronUpdate(BaseModel):
     last_name: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
+    address: Optional[str] = None
+    birthdate: Optional[date] = None
     status: Optional[PatronStatus] = None
 
 

@@ -76,6 +76,10 @@
     "lastName": "Last Name",
     "email": "Email",
     "phone": "Phone",
+    "address": "Address",
+    "addressPlaceholder": "Street, City, Postal Code...",
+    "birthdate": "Date of Birth",
+    "birthdatePlaceholder": "Select date of birth",
     "status": "Status",
     "created": "Created",
     "updated": "Last Updated",
@@ -101,6 +105,11 @@
     "noItemsFound": "No items found",
     "searchPlaceholder": "Search by catalog ID, title, author, ISBN...",
     "addFirstItem": "Add your first book or media item to get started",
+    "itemsByAuthor": "Items by {author}",
+    "noItemsByAuthor": "No items found by this author",
+    "itemCountByAuthor": "{count} {count, plural, one {item} other {items}} found",
+    "filteringByAuthor": "Filtering by author: {author}",
+    "clearFilter": "Clear filter",
     "catalogId": "Catalog ID",
     "selectType": "Select type",
     "selectStatus": "Select status",
@@ -205,6 +214,16 @@
       "reset": "Reset",
       "preview": "Next catalog ID will be:",
       "yearInfo": "Current year: {year}"
+    },
+    "loanPeriods": {
+      "title": "Loan Periods",
+      "description": "Configure default loan periods and extension settings",
+      "defaultPeriod": "Default Loan Period (days)",
+      "defaultPeriodHelp": "Number of days for the default loan period",
+      "availablePeriods": "Available Periods",
+      "availablePeriodsHelp": "Comma-separated list of available loan periods in days (e.g., 7, 14, 21, 28)",
+      "extensionPeriod": "Extension Period (days)",
+      "extensionPeriodHelp": "Number of days to extend a loan when renewed"
     }
   },
   "import": {

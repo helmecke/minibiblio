@@ -13,6 +13,8 @@ interface Patron {
   last_name: string;
   email?: string;
   phone?: string;
+  address?: string;
+  birthdate?: string;
   membership_id: string;
   status: "active" | "inactive" | "suspended";
   created_at: string;
@@ -160,6 +162,10 @@ export default async function PatronDetailsPage({
               <p className="text-sm font-medium text-muted-foreground">{t("phone")}</p>
               <p className="text-sm">{patron.phone || "-"}</p>
             </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">{t("address")}</p>
+              <p className="text-sm whitespace-pre-line">{patron.address || "-"}</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -175,6 +181,16 @@ export default async function PatronDetailsPage({
               <Badge variant={getStatusBadgeVariant(patron.status)}>
                 {t(`statuses.${patron.status}`)}
               </Badge>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                {t("birthdate")}
+              </p>
+              <p className="text-sm">
+                {patron.birthdate
+                  ? new Date(patron.birthdate).toLocaleDateString()
+                  : "-"}
+              </p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">

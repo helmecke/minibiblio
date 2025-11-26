@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CatalogTable } from "./catalog-table";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -24,12 +26,16 @@ export function CatalogContent() {
   const t = useTranslations("catalog");
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const authorFilter = searchParams.get("author");
 
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState(authorFilter || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(authorFilter || "");
 
   // Debounce search input
   useEffect(() => {
@@ -65,6 +71,11 @@ export function CatalogContent() {
     fetchItems();
   }, [fetchItems]);
 
+  const clearFilter = () => {
+    setSearch("");
+    router.push("/admin/catalog");
+  };
+
   if (error) {
     return (
       <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
@@ -75,6 +86,22 @@ export function CatalogContent() {
 
   return (
     <div className="space-y-4">
+      {authorFilter && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="text-sm">
+            {t("filteringByAuthor", { author: authorFilter })}
+          </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearFilter}
+            className="h-6 px-2 text-xs"
+          >
+            <X className="mr-1 h-3 w-3" />
+            {t("clearFilter")}
+          </Button>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

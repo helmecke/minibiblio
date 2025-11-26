@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -20,6 +22,8 @@ interface Patron {
   last_name: string;
   email?: string;
   phone?: string;
+  address?: string;
+  birthdate?: string;
   membership_id: string;
   status: "active" | "inactive" | "suspended";
 }
@@ -37,6 +41,8 @@ export function EditPatronForm({ patron }: EditPatronFormProps) {
     last_name: patron.last_name,
     email: patron.email || "",
     phone: patron.phone || "",
+    address: patron.address || "",
+    birthdate: patron.birthdate ? new Date(patron.birthdate) : undefined,
     status: patron.status,
   });
 
@@ -51,6 +57,8 @@ export function EditPatronForm({ patron }: EditPatronFormProps) {
         last_name: formData.last_name,
         email: formData.email || null,
         phone: formData.phone || null,
+        address: formData.address || null,
+        birthdate: formData.birthdate ? formData.birthdate.toISOString().split('T')[0] : null,
         status: formData.status,
       };
 
@@ -134,6 +142,30 @@ export function EditPatronForm({ patron }: EditPatronFormProps) {
                 placeholder="Optional"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Textarea
+              id="address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+              placeholder="Optional"
+              rows={3}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="birthdate">Date of Birth</Label>
+            <DatePicker
+              value={formData.birthdate}
+              onChange={(date) =>
+                setFormData({ ...formData, birthdate: date })
+              }
+              placeholder="Optional"
+            />
           </div>
 
           <div className="space-y-2">
