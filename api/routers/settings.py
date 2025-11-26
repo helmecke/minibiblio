@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
+import json
 
-from api.models.settings import AppSetting, AppSettingUpdate, CatalogIdSettings, CatalogIdPreview
+from api.models.settings import AppSetting, AppSettingUpdate, CatalogIdSettings, CatalogIdPreview, LoanPeriodSettings
 from api.db.database import get_db
 from api.db.models import AppSettingDB
 
@@ -14,8 +15,10 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 CATALOG_ID_FORMAT_KEY = "catalog_id_format"
 CATALOG_ID_LAST_NUMBER_KEY = "catalog_id_last_number"
 CATALOG_ID_LAST_YEAR_KEY = "catalog_id_last_year"
+LOAN_PERIODS_KEY = "loan_periods"
 
 DEFAULT_CATALOG_ID_FORMAT = "{number}/{year}"
+DEFAULT_LOAN_PERIODS = LoanPeriodSettings()
 
 
 async def get_setting(db: AsyncSession, key: str, default: str | None = None) -> str | None:
@@ -152,3 +155,37 @@ async def generate_catalog_id(db: AsyncSession) -> str:
     )
 
     return catalog_id
+
+
+@router.get("/loan-periods/config", response_model=LoanPeriodSettings)
+async def get_loan_period_config(db: AsyncSession = Depends(get_db)):
+    """Get loan period configuration."""
+    settings_json = await get_setting(db, LOAN_PERIODS_KEY)
+
+    if settings_json:
+        try:
+            settings_dict = json.loads(settings_json)
+            return LoanPeriodSettings(**settings_dict)
+        except (json.JSONDecodeError, ValueError):
+            # If parsing fails, return defaults
+            return DEFAULT_LOAN_PERIODS
+
+    return DEFAULT_LOAN_PERIODS
+
+
+@router.put("/loan-periods/config", response_model=LoanPeriodSettings)
+async def update_loan_period_config(data: LoanPeriodSettings, db: AsyncSession = Depends(get_db)):
+    """Update loan period configuration."""
+    # Validate that default period is in available periods
+    if data.default_period not in data.available_periods:
+        raise HTTPException(
+            status_code=400,
+            detail="Default period must be one of the available periods"
+        )
+
+    # Store as JSON
+    settings_json = json.dumps(data.model_dump())
+    await set_setting(db, LOAN_PERIODS_KEY, settings_json)
+    await db.commit()
+
+    return data

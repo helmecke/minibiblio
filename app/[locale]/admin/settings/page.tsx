@@ -21,6 +21,12 @@ interface CatalogIdPreview {
   current_year: number;
 }
 
+interface LoanPeriodSettings {
+  default_period: number;
+  available_periods: number[];
+  extension_period: number;
+}
+
 const FORMAT_PRESETS = [
   { value: "{number}/{year}", label: "number/year", example: "255/24" },
   { value: "{year}/{number}", label: "year/number", example: "24/255" },
@@ -40,15 +46,25 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Form state
+  // Catalog ID Form state
   const [format, setFormat] = useState("{number}/{year}");
   const [lastNumber, setLastNumber] = useState(0);
 
+  // Loan Period state
+  const [loanSettings, setLoanSettings] = useState<LoanPeriodSettings | null>(null);
+  const [loanSaving, setLoanSaving] = useState(false);
+  const [loanError, setLoanError] = useState<string | null>(null);
+  const [loanSuccess, setLoanSuccess] = useState(false);
+  const [defaultPeriod, setDefaultPeriod] = useState(14);
+  const [availablePeriods, setAvailablePeriods] = useState<number[]>([7, 14, 21, 28]);
+  const [extensionPeriod, setExtensionPeriod] = useState(7);
+
   const fetchSettings = useCallback(async () => {
     try {
-      const [configRes, previewRes] = await Promise.all([
+      const [configRes, previewRes, loanRes] = await Promise.all([
         fetch("/api/python/settings/catalog-id/config"),
         fetch("/api/python/settings/catalog-id/preview"),
+        fetch("/api/python/settings/loan-periods/config"),
       ]);
 
       if (configRes.ok) {
@@ -61,6 +77,14 @@ export default function SettingsPage() {
       if (previewRes.ok) {
         const previewData: CatalogIdPreview = await previewRes.json();
         setPreview(previewData);
+      }
+
+      if (loanRes.ok) {
+        const loanConfig: LoanPeriodSettings = await loanRes.json();
+        setLoanSettings(loanConfig);
+        setDefaultPeriod(loanConfig.default_period);
+        setAvailablePeriods(loanConfig.available_periods);
+        setExtensionPeriod(loanConfig.extension_period);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : tErrors("anErrorOccurred"));
@@ -129,6 +153,44 @@ export default function SettingsPage() {
 
   const handleResetCounter = async () => {
     setLastNumber(0);
+  };
+
+  const handleLoanSave = async () => {
+    setLoanSaving(true);
+    setLoanError(null);
+    setLoanSuccess(false);
+
+    try {
+      // Validate that default period is in available periods
+      if (!availablePeriods.includes(defaultPeriod)) {
+        throw new Error("Default period must be one of the available periods");
+      }
+
+      const res = await fetch("/api/python/settings/loan-periods/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          default_period: defaultPeriod,
+          available_periods: availablePeriods,
+          extension_period: extensionPeriod,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to save loan period settings");
+      }
+
+      setLoanSuccess(true);
+      await fetchSettings();
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setLoanSuccess(false), 3000);
+    } catch (e) {
+      setLoanError(e instanceof Error ? e.message : tErrors("anErrorOccurred"));
+    } finally {
+      setLoanSaving(false);
+    }
   };
 
   if (loading) {
@@ -225,6 +287,91 @@ export default function SettingsPage() {
             )}
             {error && (
               <p className="text-sm text-red-500">{error}</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Loan Periods Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("loanPeriods.title")}</CardTitle>
+          <CardDescription>{t("loanPeriods.description")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Default Period */}
+          <div className="space-y-2">
+            <Label htmlFor="defaultPeriod">{t("loanPeriods.defaultPeriod")}</Label>
+            <Input
+              id="defaultPeriod"
+              type="number"
+              min="1"
+              value={defaultPeriod}
+              onChange={(e) => setDefaultPeriod(parseInt(e.target.value) || 14)}
+              className="w-32"
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("loanPeriods.defaultPeriodHelp")}
+            </p>
+          </div>
+
+          {/* Available Periods */}
+          <div className="space-y-2">
+            <Label htmlFor="availablePeriods">{t("loanPeriods.availablePeriods")}</Label>
+            <Input
+              id="availablePeriods"
+              type="text"
+              value={availablePeriods.join(", ")}
+              onChange={(e) => {
+                const periods = e.target.value
+                  .split(",")
+                  .map(s => parseInt(s.trim()))
+                  .filter(n => !isNaN(n) && n > 0);
+                setAvailablePeriods(periods);
+              }}
+              placeholder="7, 14, 21, 28"
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("loanPeriods.availablePeriodsHelp")}
+            </p>
+          </div>
+
+          {/* Extension Period */}
+          <div className="space-y-2">
+            <Label htmlFor="extensionPeriod">{t("loanPeriods.extensionPeriod")}</Label>
+            <Input
+              id="extensionPeriod"
+              type="number"
+              min="1"
+              value={extensionPeriod}
+              onChange={(e) => setExtensionPeriod(parseInt(e.target.value) || 7)}
+              className="w-32"
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("loanPeriods.extensionPeriodHelp")}
+            </p>
+          </div>
+
+          {/* Save Button */}
+          <div className="flex items-center gap-4">
+            <Button onClick={handleLoanSave} disabled={loanSaving}>
+              {loanSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("saving")}
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  {tCommon("save")}
+                </>
+              )}
+            </Button>
+            {loanSuccess && (
+              <p className="text-sm text-green-600">{t("saved")}</p>
+            )}
+            {loanError && (
+              <p className="text-sm text-red-500">{loanError}</p>
             )}
           </div>
         </CardContent>

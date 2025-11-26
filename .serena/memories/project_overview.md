@@ -108,6 +108,9 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 
 ### Catalog Management
 - **List**: `/admin/catalog` - Table with search, type/status filters
+  - **Title Links**: Titles link to detail view
+  - **Author Links**: Authors link to author page showing all items by that author
+  - **Author Filtering**: URL parameter-based filtering by author name
 - **Create**: Dialog modal via "Add Item" button
 - **Details**: `/admin/catalog/[id]` - View item information
 - **Edit**: `/admin/catalog/[id]/edit` - Update item form
@@ -119,10 +122,11 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **List**: `/admin/circulation` - All loans with status indicators
 - **Checkout**: Dialog to check out item to patron (sets item status to borrowed)
 - **Return**: Action to return item (sets item status to available)
-- **Extend**: Action to extend due date by 7 days
+- **Extend**: Action to extend due date (uses configurable extension period from settings)
 - **Details**: `/admin/circulation/[id]` - View loan with linked item/patron
 - **Overdue**: Visual indicators for overdue items
 - **Dashboard**: Shows active loans and overdue counts
+- **Configurable Periods**: All loan periods (default, available options, extension) are configurable in Settings
 
 ### CSV Import
 - **Page**: `/admin/import` - Import catalog items from CSV files
@@ -136,7 +140,11 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Page**: `/admin/settings` - Application configuration
 - **Catalog ID Format**: Configurable format (default: `{number}/{year}` → "1/24", "2/24")
 - **Counter Management**: Auto-increment, resets to 1 on new year
-- **Database**: Settings stored in `app_settings` table (key-value)
+- **Loan Periods**: Configurable default loan period, available periods, and extension period
+  - Default Period: Number of days for default checkout (default: 14)
+  - Available Periods: Comma-separated list of selectable periods (default: 7, 14, 21, 28)
+  - Extension Period: Number of days to extend when renewing (default: 7)
+- **Database**: Settings stored in `app_settings` table (key-value JSON)
 
 ### Reports
 - **Page**: `/admin/reports` - Library statistics and loan history
@@ -155,6 +163,8 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - `id` (UUID), `membership_id` (auto: "LIB-XXXXXXXX")
 - `first_name`, `last_name` (required)
 - `email`, `phone` (optional)
+- `address` (optional, Text field for multi-line addresses)
+- `birthdate` (optional, Date field)
 - `status` (active/inactive/suspended)
 - `created_at`, `updated_at`
 
@@ -209,6 +219,8 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - GET `/catalog-id/config` - Get catalog ID configuration
 - PUT `/catalog-id/config` - Update catalog ID configuration
 - GET `/catalog-id/preview` - Preview next catalog ID
+- GET `/loan-periods/config` - Get loan period settings (default_period, available_periods, extension_period)
+- PUT `/loan-periods/config` - Update loan period settings
 
 ### Reports (`/api/python/reports`)
 - GET `/patrons` - List patrons for report dropdown
