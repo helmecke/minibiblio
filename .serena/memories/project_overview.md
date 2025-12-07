@@ -11,6 +11,8 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - **Audit Logging**: Complete audit trail of all library operations
 - **Search Interface**: Advanced search across books, readers, and loans
 - **Statistics**: Loan statistics and reader activity reports
+- **Local Authentication**: Username/password authentication system (NEW)
+- **Docker Deployment**: Complete Windows deployment with Docker (NEW)
 
 ## Tech Stack
 
@@ -21,30 +23,56 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - **Tailwind CSS 3** - Utility-first CSS framework
 - **Shadcn UI** - Component library (Radix UI + Tailwind)
 - **next-intl** - Internationalization (English + German)
+- **NextAuth.js v5** - Authentication with Credentials provider (UPDATED)
 
 ### Backend
 - **FastAPI** - Python web framework (accessible at `/api/python/`)
 - **Next.js API Routes** - Server-side API endpoints (at `/api/`)
-- **NextAuth.js v5** - Authentication with Google OAuth
+- **NextAuth.js v5** - Authentication with Google OAuth (optional)
 - **PostgreSQL 17** - Database (via Docker)
 - **SQLAlchemy 2.0** - ORM with async support (asyncpg driver)
 - **Alembic** - Database migrations
 - **Pydantic v2** - Data validation and settings
+- **JWT Authentication** - Token-based authentication (NEW)
+- **Passlib** - Password hashing with bcrypt (NEW)
 
 ### Development Tools
 - **ESLint** - JavaScript/TypeScript linting
 - **uv** - Fast Python package manager
 - **concurrently** - Run multiple dev servers
 - **Docker Compose** - Database and services
+- **Docker** - Production deployment (NEW)
 
 ## Architecture
 
 - Admin dashboard at `/[locale]/admin` (protected by authentication)
-- Login page at `/[locale]/login` with Google OAuth
+- Login page at `/[locale]/login` with username/password form (UPDATED)
 - FastAPI server mapped to `/api/python/` via Next.js rewrites
 - Next.js API routes at `/api/`
 - Python dependencies managed via `pyproject.toml` and `uv.lock`
 - Locale-based routing with `[locale]` dynamic segment (en, de)
+- Docker-based deployment with three services: nextjs, fastapi, db (NEW)
+
+## Authentication System (NEW)
+
+### Local Authentication
+- **Username/Password**: Primary authentication method
+- **JWT Tokens**: Secure session management
+- **User Roles**: admin, librarian, user
+- **Password Hashing**: bcrypt with passlib
+- **Session Management**: NextAuth.js with Credentials provider
+
+### User Management
+- **UserDB Model**: Stores user credentials and roles
+- **Admin Creation**: Automatic admin user creation on first startup
+- **Role-based Access**: Different permissions for different roles
+- **Password Change**: Secure password update functionality
+
+### API Endpoints
+- `POST /api/python/auth/login` - User login
+- `GET /api/python/auth/me` - Get current user
+- `POST /api/python/auth/change-password` - Update password
+- `POST /api/python/auth/register` - Create first user
 
 ## Internationalization (i18n)
 
@@ -59,8 +87,8 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - `i18n/request.ts` - Server-side i18n setup (getRequestConfig)
 - `i18n/navigation.ts` - Localized navigation helpers (Link, useRouter, etc.)
 - `middleware.ts` - Combined auth + i18n middleware
-- `messages/en.json` - English translations
-- `messages/de.json` - German translations
+- `messages/en.json` - English translations (UPDATED)
+- `messages/de.json` - German translations (UPDATED)
 
 ### Translation Namespaces
 - `common` - Shared UI strings (save, cancel, delete, etc.)
@@ -74,13 +102,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - `settings` - Application settings
 - `reports` - Reports and statistics (patronHistory, yearlyStats, bookHistory, table, status, months)
 - `errors` - Error messages
-- `login` - Login page
-
-### Usage Patterns
-- **Server Components**: `getTranslations("namespace")`
-- **Client Components**: `useTranslations("namespace")`
-- **Navigation**: Import `Link`, `useRouter` from `@/i18n/navigation`
-- **Locale Detection**: `useLocale()` hook for locale-aware formatting
+- `login` - Login page (UPDATED with new authentication strings)
 
 ## Database
 
@@ -89,6 +111,7 @@ MiniBiblio is a comprehensive library management system for small libraries.
 - Async SQLAlchemy with asyncpg driver
 - Alembic for migrations (async-compatible)
 - Settings via pydantic-settings from `.env` file
+- **Users Table**: New table for authentication (NEW)
 
 ### Database Commands
 ```bash
@@ -96,6 +119,37 @@ docker compose up -d db              # Start PostgreSQL
 uv run alembic upgrade head          # Run migrations
 uv run alembic revision --autogenerate -m "message"  # Create migration
 ```
+
+### Database Models
+- **UserDB**: User authentication and roles (NEW)
+- **PatronDB**: Library members
+- **CatalogItemDB**: Library items (books, DVDs, etc.)
+- **LoanDB**: Loan records
+- **AppSettingDB**: Application settings
+
+## Docker Deployment (NEW)
+
+### Services
+- **nextjs**: Frontend application (port 3000)
+- **fastapi**: Backend API (port 8000)
+- **db**: PostgreSQL database (port 5432)
+
+### Configuration Files
+- `docker-compose.prod.yml` - Production Docker Compose
+- `Dockerfile.nextjs` - Next.js production container
+- `Dockerfile.fastapi` - FastAPI production container
+- `docker-entrypoint.sh` - FastAPI startup script
+- `.env.production` - Environment configuration template
+
+### Windows Scripts
+- `install.bat` - Installation and setup
+- `start.bat` - Start all services
+- `stop.bat` - Stop all services
+- `logs.bat` - View application logs
+- `update.bat` - Update to latest version
+- `scripts/backup.bat` - Database backup
+- `scripts/restore.bat` - Database restore
+- `scripts/setup-auto-backup.bat` - Schedule automatic backups
 
 ## Implemented Features
 
@@ -157,10 +211,27 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - **Checkout from Catalog**: Available items show "Checkout" button on detail page and in table "..." menu
 - **Checkout Dialog**: Pre-selects item, user picks patron + loan period
 
+### Authentication (NEW)
+- **Login Page**: Username/password form with error handling
+- **Session Management**: JWT-based secure sessions
+- **User Roles**: Admin, librarian, user with different permissions
+- **Password Security**: Bcrypt hashing, secure password change
+- **Default Admin**: Automatic admin user creation on first startup
+
 ## Database Models
 
+### UserDB (NEW)
+- `id` (UUID, primary key)
+- `username` (unique, required)
+- `email` (unique, optional)
+- `hashed_password` (bcrypt hash, required)
+- `is_active` (boolean, default: true)
+- `role` (enum: admin/librarian/user, default: user)
+- `created_at`, `updated_at` (timestamps)
+
 ### PatronDB
-- `id` (UUID), `membership_id` (auto: "LIB-XXXXXXXX")
+- `id` (UUID, primary key)
+- `membership_id` (auto: "LIB-XXXXXXXX")
 - `first_name`, `last_name` (required)
 - `email`, `phone` (optional)
 - `address` (optional, Text field for multi-line addresses)
@@ -169,7 +240,8 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - `created_at`, `updated_at`
 
 ### CatalogItemDB
-- `id` (UUID), `catalog_id` (auto: "CAT-XXXXXXXX")
+- `id` (UUID, primary key)
+- `catalog_id` (auto: "CAT-XXXXXXXX")
 - `type` (book/dvd/cd/magazine/other)
 - `title` (required), `author`, `isbn`, `publisher`, `year`
 - `description`, `genre`, `language`, `location`
@@ -177,13 +249,20 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 - `created_at`, `updated_at`
 
 ### LoanDB
-- `id` (UUID), `loan_id` (auto: "LN-XXXXXXXX")
+- `id` (UUID, primary key)
+- `loan_id` (auto: "LN-XXXXXXXX")
 - `catalog_item_id`, `patron_id` (foreign keys)
 - `checkout_date`, `due_date`, `return_date`
 - `status` (active/returned/overdue/lost)
 - `notes`, `created_at`, `updated_at`
 
 ## API Endpoints
+
+### Authentication (NEW)
+- `POST /api/python/auth/login` - User login with username/password
+- `GET /api/python/auth/me` - Get current user information
+- `POST /api/python/auth/change-password` - Change user password
+- `POST /api/python/auth/register` - Create first user (if no users exist)
 
 ### Patrons (`/api/python/patrons`)
 - GET `/` - List patrons (filter by status)
@@ -231,24 +310,107 @@ uv run alembic revision --autogenerate -m "message"  # Create migration
 ## Key Files
 
 ### Backend
-- `api/config.py` - Settings from environment
+- `api/config.py` - Settings from environment (UPDATED with JWT settings)
 - `api/db/database.py` - Async SQLAlchemy engine
-- `api/db/models.py` - ORM models (PatronDB, CatalogItemDB, LoanDB)
-- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py, import_models.py, reports.py, settings.py)
-- `api/routers/` - API routes (patrons.py, catalog.py, loans.py, import_router.py, reports.py, settings.py)
-- `alembic/versions/` - Database migrations
+- `api/db/models.py` - ORM models (PatronDB, CatalogItemDB, LoanDB, UserDB - NEW)
+- `api/models/` - Pydantic schemas (patron.py, catalog.py, loan.py, import_models.py, reports.py, settings.py, user.py - NEW)
+- `api/routers/` - API routes (patrons.py, catalog.py, loans.py, import_router.py, reports.py, settings.py, auth.py - NEW)
+- `api/scripts/create_admin.py` - Admin user creation script (NEW)
+- `alembic/versions/` - Database migrations (f1a2b3c4d5e6_add_users_table.py - NEW)
 
 ### Frontend
 - `app/[locale]/admin/page.tsx` - Dashboard with stats
 - `app/[locale]/admin/layout.tsx` - Admin layout with sidebar
+- `app/[locale]/admin/nav-item.tsx` - Sidebar nav component
+- `app/[locale]/admin/user.tsx` - User menu component
+- `app/[locale]/admin/providers.tsx` - Client providers
+- `app/[locale]/admin/language-switcher.tsx` - EN/DE toggle
 - `app/[locale]/admin/patrons/` - Patron management pages
 - `app/[locale]/admin/catalog/` - Catalog management pages
 - `app/[locale]/admin/circulation/` - Loan management pages
 - `app/[locale]/admin/import/` - CSV import page
 - `app/[locale]/admin/settings/` - Settings page
 - `app/[locale]/admin/reports/` - Reports page (patron history, yearly stats)
+- `app/[locale]/login/page.tsx` - Login page with username/password form (UPDATED)
 - `i18n/` - Internationalization config (config.ts, request.ts, navigation.ts)
-- `messages/` - Translation files (en.json, de.json)
+- `messages/` - Translation files (en.json, de.json - UPDATED with login strings)
+- `lib/auth.ts` - NextAuth configuration with Credentials provider (UPDATED)
+
+### Docker & Deployment (NEW)
+- `docker-compose.prod.yml` - Production Docker Compose
+- `Dockerfile.nextjs` - Next.js production container
+- `Dockerfile.fastapi` - FastAPI production container
+- `docker-entrypoint.sh` - FastAPI startup script
+- `.env.production` - Environment configuration template
+- `install.bat` - Windows installation script
+- `start.bat` - Windows startup script
+- `stop.bat` - Windows stop script
+- `logs.bat` - Windows logs script
+- `update.bat` - Windows update script
+- `scripts/backup.bat` - Database backup script
+- `scripts/restore.bat` - Database restore script
+- `scripts/setup-auto-backup.bat` - Automatic backup setup
+- `DEPLOYMENT.md` - Complete deployment documentation
 
 ### Shadcn UI Components
 Located in `components/ui/`: button, badge, card, dialog, dropdown-menu, input, label, select, sheet, table, textarea, tooltip
+
+## Deployment (NEW)
+
+### Windows 11 Docker Deployment
+- **One-click installation**: `install.bat` script
+- **Automatic setup**: Docker image building, database initialization
+- **Secure defaults**: Admin user creation, password requirements
+- **Easy management**: Start/stop/logs/update scripts
+- **Data persistence**: Docker volumes for database storage
+- **Backup system**: Manual and automatic database backups
+- **Production ready**: Health checks, restart policies, logging
+
+### Security Features
+- **Local authentication**: No external dependencies required
+- **Secure passwords**: Bcrypt hashing, minimum requirements
+- **JWT tokens**: Secure session management
+- **Environment variables**: Sensitive data not in code
+- **Docker isolation**: Containerized services
+- **Backup encryption**: Optional backup encryption
+
+### Maintenance
+- **Automatic updates**: `update.bat` script
+- **Health monitoring**: Docker health checks
+- **Log management**: Centralized logging with `logs.bat`
+- **Backup scheduling**: Windows Task Scheduler integration
+- **Resource monitoring**: Docker Desktop resource usage
+
+## Development vs Production
+
+### Development
+- Uses `docker-compose.yml` (development services)
+- Hot reload enabled
+- Debug logging
+- Local database on port 5432
+- Next.js dev server on port 3000
+- FastAPI dev server on port 8000
+
+### Production (NEW)
+- Uses `docker-compose.prod.yml` (production services)
+- Optimized Docker images
+- Health checks enabled
+- Restart policies configured
+- Standalone Next.js build
+- Production logging
+- Secure defaults
+
+## Migration Path
+
+### From Development to Production
+1. **Backup development data**: `scripts/backup.bat`
+2. **Configure production**: Edit `.env` file
+3. **Run production install**: `install.bat`
+4. **Restore data**: `scripts/restore.bat`
+5. **Test functionality**: Verify all features work
+
+### Data Portability
+- **SQL dumps**: Standard PostgreSQL format
+- **Cross-platform**: Works on any system with Docker
+- **Version control**: Database schema tracked with Alembic
+- **Backup automation**: Scheduled backups with timestamps
