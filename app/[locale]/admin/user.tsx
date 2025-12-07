@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,12 +8,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import Image from "next/image";
 
-export async function UserMenu() {
-  const session = await auth();
-  const user = session?.user;
+interface UserMenuProps {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } | null;
+}
+
+export function UserMenu({ user }: UserMenuProps) {
 
   return (
     <DropdownMenu>
@@ -32,7 +38,7 @@ export async function UserMenu() {
               className="overflow-hidden rounded-full"
             />
           ) : (
-            <User className="h-5 w-5" />
+            <UserIcon className="h-5 w-5" />
           )}
         </Button>
       </DropdownMenuTrigger>

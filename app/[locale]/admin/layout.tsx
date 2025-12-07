@@ -29,6 +29,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("nav");
+  const session = await (await import("@/lib/auth")).auth();
 
   return (
     <Providers>
@@ -137,7 +138,7 @@ export default async function AdminLayout({
             <LanguageSwitcher />
 
             {/* User Menu */}
-            <UserMenu />
+            <UserMenu user={session?.user} />
           </header>
 
           {/* Page Content */}
