@@ -29,3 +29,7 @@ async def get_db():
         except Exception:
             await session.rollback()
             raise
+
+
+# Alias for consistency
+get_async_session = get_db

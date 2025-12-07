@@ -10,5 +10,10 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://postgres:password@localhost:5432/database"
 
+    # JWT Authentication
+    jwt_secret: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+
 
 settings = Settings()

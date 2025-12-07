@@ -195,8 +195,16 @@
     "anErrorOccurred": "Ein Fehler ist aufgetreten"
   },
   "login": {
-    "title": "Bei MiniBiblio anmelden",
-    "description": "Zugang zu Ihrem Bibliotheksverwaltungs-Dashboard",
+    "title": "Admin-Dashboard",
+    "subtitle": "Melden Sie sich an, um auf das Admin-Panel zuzugreifen",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "signingIn": "Anmeldung läuft...",
+    "signInWithGoogle": "Mit Google anmelden",
+    "orContinueWith": "Oder weiter mit",
+    "invalidCredentials": "Ungültiger Benutzername oder Passwort",
+    "loginError": "Bei der Anmeldung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
     "continueWith": "Weiter mit {provider}"
   },
   "settings": {

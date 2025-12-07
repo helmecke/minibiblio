@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.routers.auth import router as auth_router
 from api.routers.patrons import router as patrons_router
 from api.routers.catalog import router as catalog_router
 from api.routers.loans import router as loans_router
@@ -36,6 +37,7 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth_router, prefix="/api/python")
 app.include_router(patrons_router, prefix="/api/python")
 app.include_router(catalog_router, prefix="/api/python")
 app.include_router(loans_router, prefix="/api/python")

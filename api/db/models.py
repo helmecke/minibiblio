@@ -2,11 +2,27 @@ import uuid
 import enum
 from datetime import datetime, date
 
-from sqlalchemy import String, Text, Integer, Enum, DateTime, Date, ForeignKey, func
+from sqlalchemy import (
+    String,
+    Text,
+    Integer,
+    Enum,
+    DateTime,
+    Date,
+    Boolean,
+    ForeignKey,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from api.db.database import Base
+
+
+class UserRole(str, enum.Enum):
+    admin = "admin"
+    librarian = "librarian"
+    user = "user"
 
 
 class PatronStatus(str, enum.Enum):
@@ -186,6 +202,47 @@ class LoanDB(Base):
     # Relationships
     catalog_item: Mapped["CatalogItemDB"] = relationship()
     patron: Mapped["PatronDB"] = relationship()
+
+
+class UserDB(Base):
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    username: Mapped[str] = mapped_column(
+        String(50),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+    email: Mapped[str | None] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=True,
+        index=True,
+    )
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole),
+        nullable=False,
+        default=UserRole.user,
+        index=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
 
 
 class AppSettingDB(Base):

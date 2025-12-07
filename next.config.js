@@ -4,6 +4,7 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -19,7 +20,7 @@ const nextConfig = {
         destination:
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/api/python/:path*"
-            : "/api/",
+            : "http://fastapi:8000/api/python/:path*",
       },
     ];
   },

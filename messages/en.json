@@ -195,8 +195,16 @@
     "anErrorOccurred": "An error occurred"
   },
   "login": {
-    "title": "Sign in to MiniBiblio",
-    "description": "Access your library management dashboard",
+    "title": "Admin Dashboard",
+    "subtitle": "Sign in to access the admin panel",
+    "username": "Username",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "signInWithGoogle": "Sign in with Google",
+    "orContinueWith": "Or continue with",
+    "invalidCredentials": "Invalid username or password",
+    "loginError": "An error occurred during login. Please try again.",
     "continueWith": "Continue with {provider}"
   },
   "settings": {
