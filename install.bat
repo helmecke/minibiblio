@@ -26,9 +26,9 @@ echo [OK] Docker is installed
 echo:
 
 :: Check if .env file exists
-if not exist ".env" (
+if not exist .env (
     echo Creating .env file from template...
-    if exist ".env.production" (
+    if exist .env.production (
         copy .env.production .env
     ) else (
         echo ERROR: .env.production template not found
