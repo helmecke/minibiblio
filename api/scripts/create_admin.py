@@ -13,9 +13,22 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from sqlalchemy import select
 from api.db.database import async_session_factory
 from api.db.models import UserDB, UserRole
-from passlib.context import CryptContext
+import bcrypt
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    """Hash a password using bcrypt"""
+    password_bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against a hashed password"""
+    password_bytes = plain_password.encode("utf-8")
+    hashed_bytes = hashed_password.encode("utf-8")
+    return bcrypt.checkpw(password_bytes, hashed_bytes)
 
 
 async def create_default_admin():
@@ -36,7 +49,7 @@ async def create_default_admin():
                 admin = UserDB(
                     username=admin_username,
                     email=admin_email,
-                    hashed_password=pwd_context.hash(admin_password),
+                    hashed_password=hash_password(admin_password),
                     is_active=True,
                     role=UserRole.admin,
                 )
