@@ -89,3 +89,5 @@ echo [OK] Services restarted
 echo Wait 30 seconds and refresh your browser
 echo.
 pause
+
+endlocal

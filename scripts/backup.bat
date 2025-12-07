@@ -47,3 +47,5 @@ echo.
 echo To restore this backup, use: restore.bat
 echo.
 pause
+
+endlocal
