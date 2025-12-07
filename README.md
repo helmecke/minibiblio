@@ -1,13 +1,39 @@
-<p align="center">
-  <a href="https://nextjs-fastapi-starter.vercel.app/">
-    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h3 align="center">Next.js FastAPI Starter</h3>
-  </a>
-</p>
+# MiniBiblio
 
-<p align="center">Simple Next.js boilerplate that uses BOTH <a href="https://fastapi.tiangolo.com/">FastAPI</a> AND NEXTJS 13 as the API backend unlike <a href="https://github.com/digitros/nextjs-fastapi" >the example offered by NextJS</a>
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/helmecke/minibiblio?label=version)
+![Docker Pulls](https://img.shields.io/badge/docker-ghcr.io-blue)
+![License](https://img.shields.io/github/license/helmecke/minibiblio)
 
-<br/>
+A comprehensive library management system for small libraries.
+
+## Quick Start
+
+### Using Pre-built Images (Recommended)
+
+1. **Download the deployment files**:
+   ```bash
+   wget https://raw.githubusercontent.com/helmecke/minibiblio/main/docker-compose.prod.yml
+   wget https://raw.githubusercontent.com/helmecke/minibiblio/main/.env.production
+   ```
+
+2. **Configure environment**:
+   ```bash
+   cp .env.production .env
+   # Edit .env with your credentials
+   ```
+
+3. **Start MiniBiblio**:
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+4. **Access the application**:
+   - Web Interface: http://localhost:3000
+   - Default credentials: admin / (see .env for ADMIN_PASSWORD)
+
+### Building from Source
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed build instructions.
 
 ## Introduction
 
