@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 echo ==========================================
 echo MiniBiblio Update Script
 echo ==========================================
-echo.
+echo:
 
 REM Check if .env exists
 if not exist .env (
@@ -17,7 +17,7 @@ if not exist .env (
 REM Show current version
 echo Current configuration:
 type .env | findstr MINIBIBLIO_VERSION
-echo.
+echo:
 
 REM Pull latest images
 echo Pulling latest Docker images...
@@ -28,11 +28,11 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo.
+echo:
 echo Stopping current containers...
 docker-compose -f docker-compose.prod.yml down
 
-echo.
+echo:
 echo Starting updated containers...
 docker-compose -f docker-compose.prod.yml up -d
 if errorlevel 1 (
@@ -41,17 +41,17 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo.
+echo:
 echo ==========================================
 echo Update Complete!
 echo ==========================================
-echo.
+echo:
 echo Services are starting up...
 echo Database migrations will run automatically.
-echo.
+echo:
 echo Check status: docker-compose -f docker-compose.prod.yml ps
 echo View logs: docker-compose -f docker-compose.prod.yml logs -f
-echo.
+echo:
 pause
 
 endlocal

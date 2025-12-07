@@ -4,14 +4,14 @@ setlocal
 echo ========================================
 echo MiniBiblio Database Backup
 echo ========================================
-echo.
+echo:
 
 :: Check if MiniBiblio is running
 docker ps | findstr minibiblio-db >nul 2>&1
 if errorlevel 1 (
     echo ERROR: MiniBiblio database is not running
     echo Please start MiniBiblio first with: start.bat
-    echo.
+    echo:
     pause
     exit /b 1
 )
@@ -26,26 +26,26 @@ if not exist "..\backups" mkdir "..\backups"
 :: Create backup
 set backup_file=..\backups\minibiblio-backup-%timestamp%.sql
 echo Creating backup: %backup_file%
-echo.
+echo:
 
 docker exec minibiblio-db pg_dump -U postgres minibiblio > "%backup_file%"
 
 if errorlevel 1 (
-    echo.
+    echo:
     echo ERROR: Backup failed
     pause
     exit /b 1
 )
 
-echo.
+echo:
 echo ========================================
 echo Backup completed successfully!
 echo ========================================
-echo.
+echo:
 echo Backup saved to: %backup_file%
-echo.
+echo:
 echo To restore this backup, use: restore.bat
-echo.
+echo:
 pause
 
 endlocal

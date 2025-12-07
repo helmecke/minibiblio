@@ -2,21 +2,21 @@
 echo ========================================
 echo Stopping MiniBiblio...
 echo ========================================
-echo.
+echo:
 
 docker-compose -f docker-compose.prod.yml down
 
 if errorlevel 1 (
-    echo.
+    echo:
     echo ERROR: Failed to stop MiniBiblio
     pause
     exit /b 1
 )
 
-echo.
+echo:
 echo [OK] MiniBiblio stopped successfully
-echo.
+echo:
 echo Your data is safely stored in Docker volumes
 echo To restart, run: start.bat
-echo.
+echo:
 pause
