@@ -20,13 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Create UserRole enum
-    user_role_enum = postgresql.ENUM(
-        "admin", "librarian", "user", name="userrole", create_type=False
-    )
-    user_role_enum.create(op.get_bind(), checkfirst=True)
-
-    # Create users table
+    # Create users table (enum will be created automatically)
     op.create_table(
         "users",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
