@@ -6,6 +6,7 @@ const ENABLE_GOOGLE_AUTH = process.env.ENABLE_GOOGLE_AUTH === "true";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       name: "Credentials",
