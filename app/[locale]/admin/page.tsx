@@ -7,10 +7,13 @@ interface CountResponse {
 }
 
 async function getPatronCount(status?: string): Promise<number> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
     const url = status
-      ? `http://127.0.0.1:8000/api/python/patrons/count?status=${status}`
-      : "http://127.0.0.1:8000/api/python/patrons/count";
+      ? `${baseUrl}/api/python/patrons/count?status=${status}`
+      : `${baseUrl}/api/python/patrons/count`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return 0;
     const data: CountResponse = await res.json();
@@ -21,14 +24,17 @@ async function getPatronCount(status?: string): Promise<number> {
 }
 
 async function getCatalogCount(type?: string, status?: string): Promise<number> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
     const params = new URLSearchParams();
     if (type) params.set("type", type);
     if (status) params.set("status", status);
     const query = params.toString();
     const url = query
-      ? `http://127.0.0.1:8000/api/python/catalog/count?${query}`
-      : "http://127.0.0.1:8000/api/python/catalog/count";
+      ? `${baseUrl}/api/python/catalog/count?${query}`
+      : `${baseUrl}/api/python/catalog/count`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return 0;
     const data: CountResponse = await res.json();
@@ -39,8 +45,11 @@ async function getCatalogCount(type?: string, status?: string): Promise<number> 
 }
 
 async function getActiveLoansCount(): Promise<number> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/python/loans/active/count", {
+    const res = await fetch(`${baseUrl}/api/python/loans/active/count`, {
       cache: "no-store",
     });
     if (!res.ok) return 0;
@@ -52,8 +61,11 @@ async function getActiveLoansCount(): Promise<number> {
 }
 
 async function getOverdueLoansCount(): Promise<number> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/python/loans/overdue", {
+    const res = await fetch(`${baseUrl}/api/python/loans/overdue`, {
       cache: "no-store",
     });
     if (!res.ok) return 0;

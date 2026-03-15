@@ -17,8 +17,11 @@ interface Patron {
 }
 
 async function getPatron(id: string): Promise<Patron | null> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/python/patrons/${id}`, {
+    const res = await fetch(`${baseUrl}/api/python/patrons/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) return null;

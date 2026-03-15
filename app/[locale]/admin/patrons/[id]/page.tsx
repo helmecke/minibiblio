@@ -42,8 +42,11 @@ interface PatronLoanHistory {
 }
 
 async function getPatron(id: string): Promise<Patron | null> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/python/patrons/${id}`, {
+    const res = await fetch(`${baseUrl}/api/python/patrons/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -54,8 +57,11 @@ async function getPatron(id: string): Promise<Patron | null> {
 }
 
 async function getPatronLoanHistory(id: string): Promise<PatronLoanHistory | null> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/python/reports/patron/${id}/loans`, {
+    const res = await fetch(`${baseUrl}/api/python/reports/patron/${id}/loans`, {
       cache: "no-store",
     });
     if (!res.ok) return null;

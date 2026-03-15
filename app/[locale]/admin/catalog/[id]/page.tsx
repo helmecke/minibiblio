@@ -47,8 +47,11 @@ interface BookLoanHistory {
 }
 
 async function getCatalogItem(id: string): Promise<CatalogItem | null> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/python/catalog/${id}`, {
+    const res = await fetch(`${baseUrl}/api/python/catalog/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -59,8 +62,11 @@ async function getCatalogItem(id: string): Promise<CatalogItem | null> {
 }
 
 async function getBookLoanHistory(id: string): Promise<BookLoanHistory | null> {
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "http://fastapi:8000";
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/python/reports/book/${id}/loans`, {
+    const res = await fetch(`${baseUrl}/api/python/reports/book/${id}/loans`, {
       cache: "no-store",
     });
     if (!res.ok) return null;
