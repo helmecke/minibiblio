@@ -1,5 +1,4 @@
-"""
-Script to create default admin user if no users exist.
+"""Script to create default admin user if no users exist.
 This script is called automatically during Docker container startup.
 """
 
@@ -10,10 +9,14 @@ import sys
 # Add parent directory to path to import api modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
+import bcrypt
+from rich.console import Console
 from sqlalchemy import select
+
 from api.db.database import async_session_factory
 from api.db.models import UserDB, UserRole
-import bcrypt
+
+console = Console()
 
 
 def hash_password(password: str) -> str:
@@ -57,19 +60,23 @@ async def create_default_admin():
                 session.add(admin)
                 await session.commit()
 
-                print(f"✓ Default admin user created: {admin_username}")
-                print(f"  Email: {admin_email}")
-                print(f"  Password: {admin_password}")
-                print()
-                print(
-                    "  ⚠️  IMPORTANT: Change the default password immediately after first login!"
+                console.print(
+                    f"[green]✓[/green] Default admin user created: [bold]{admin_username}[/bold]"
                 )
-                print()
+                console.print(f"  Email: [cyan]{admin_email}[/cyan]")
+                console.print(f"  Password: [yellow]{admin_password}[/yellow]")
+                console.print()
+                console.print(
+                    "  [bold yellow]⚠️  IMPORTANT:[/bold yellow] Change the default password immediately after first login!"
+                )
+                console.print()
             else:
-                print("✓ Users already exist in database, skipping admin creation")
+                console.print(
+                    "[green]✓[/green] Users already exist in database, skipping admin creation"
+                )
 
         except Exception as e:
-            print(f"✗ Error creating admin user: {e}")
+            console.print(f"[red]✗[/red] Error creating admin user: {e}")
             await session.rollback()
             raise
 
