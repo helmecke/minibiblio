@@ -27,7 +27,7 @@
     "clsx": "^2.1.1",
     "concurrently": "^9.2.1",
     "date-fns": "^4.1.0",
-    "eslint": "^10.1.0",
+    "eslint": "^10.3.0",
     "eslint-config-next": "^16.2.4",
     "latest": "^0.2.0",
     "lucide-react": "^1.11.0",
