@@ -32,7 +32,7 @@
     "latest": "^0.2.0",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
-    "next-auth": "^5.0.0-beta.30",
+    "next-auth": "^5.0.0-beta.31",
     "next-intl": "^4.11.0",
     "postcss": "^8.5.12",
     "react": "^19.2.4",
