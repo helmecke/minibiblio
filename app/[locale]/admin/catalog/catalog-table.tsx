@@ -1,10 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import Link from "next/link";
-import { MoreHorizontal, Eye, Pencil, Trash2, BookUp } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  BookUp,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -65,6 +73,72 @@ interface CatalogTableProps {
   items: CatalogItem[];
 }
 
+type CatalogSortDirection = "ascending" | "descending";
+
+interface CatalogChronology {
+  number: number;
+  year: number;
+}
+
+const naturalCatalogIdCollator = new Intl.Collator("en", {
+  numeric: true,
+  sensitivity: "base",
+});
+
+function parseCatalogChronology(catalogId: string): CatalogChronology | null {
+  const match = /^(\d+)\/(\d{2}|\d{4})$/.exec(catalogId);
+  if (!match) {
+    return null;
+  }
+
+  const number = Number(match[1]);
+  const rawYear = Number(match[2]);
+  const year = match[2].length === 2
+    ? rawYear < 50
+      ? 2000 + rawYear
+      : 1900 + rawYear
+    : rawYear;
+
+  return { number, year };
+}
+
+function compareNaturally(left: string, right: string) {
+  const naturalOrder = naturalCatalogIdCollator.compare(left, right);
+  if (naturalOrder !== 0) {
+    return naturalOrder;
+  }
+
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function compareCatalogIds(
+  left: string,
+  right: string,
+  direction: CatalogSortDirection,
+) {
+  const leftChronology = parseCatalogChronology(left);
+  const rightChronology = parseCatalogChronology(right);
+
+  if (leftChronology && !rightChronology) {
+    return -1;
+  }
+  if (!leftChronology && rightChronology) {
+    return 1;
+  }
+
+  const directionMultiplier = direction === "ascending" ? 1 : -1;
+  if (!leftChronology || !rightChronology) {
+    return compareNaturally(left, right) * directionMultiplier;
+  }
+
+  const chronologicalOrder =
+    leftChronology.year - rightChronology.year ||
+    leftChronology.number - rightChronology.number ||
+    compareNaturally(left, right);
+
+  return chronologicalOrder * directionMultiplier;
+}
+
 function getTypeBadgeVariant(type: CatalogItem["type"]) {
   switch (type) {
     case "book":
@@ -103,6 +177,15 @@ export function CatalogTable({ items }: CatalogTableProps) {
   const tCommon = useTranslations("common");
   const tCirculation = useTranslations("circulation");
   const tErrors = useTranslations("errors");
+  const [sortDirection, setSortDirection] =
+    useState<CatalogSortDirection>("descending");
+  const sortedItems = useMemo(
+    () =>
+      [...items].sort((left, right) =>
+        compareCatalogIds(left.catalog_id, right.catalog_id, sortDirection),
+      ),
+    [items, sortDirection],
+  );
 
   // Checkout dialog state
   const [checkoutItem, setCheckoutItem] = useState<CatalogItem | null>(null);
@@ -211,7 +294,25 @@ export function CatalogTable({ items }: CatalogTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("catalogId")}</TableHead>
+              <TableHead aria-sort={sortDirection}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="-ml-4 h-8 gap-1 px-3"
+                  onClick={() =>
+                    setSortDirection((current) =>
+                      current === "descending" ? "ascending" : "descending",
+                    )
+                  }
+                >
+                  {t("catalogId")}
+                  {sortDirection === "descending" ? (
+                    <ArrowDown className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <ArrowUp className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </Button>
+              </TableHead>
               <TableHead>{t("title_field")}</TableHead>
               <TableHead>{t("author")}</TableHead>
               <TableHead>{t("type")}</TableHead>
@@ -220,7 +321,7 @@ export function CatalogTable({ items }: CatalogTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
+            {sortedItems.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-mono text-sm">
                   {item.catalog_id}
