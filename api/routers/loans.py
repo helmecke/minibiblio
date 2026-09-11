@@ -8,7 +8,6 @@ import uuid
 
 from api.models.loan import (
     Loan,
-    LoanSimple,
     LoanCheckout,
     LoanExtend,
     LoanReturn,

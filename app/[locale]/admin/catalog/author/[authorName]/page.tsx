@@ -1,48 +1,14 @@
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CatalogTable } from "../../catalog-table";
-
-interface CatalogItem {
-  id: string;
-  catalog_id: string;
-  type: "book" | "dvd" | "cd" | "magazine" | "other";
-  title: string;
-  author?: string;
-  isbn?: string;
-  status: "available" | "borrowed" | "reserved" | "damaged" | "lost";
-  created_at: string;
-  updated_at: string;
-}
+import { getItemsByAuthor } from "./author-data";
 
 interface AuthorPageProps {
   params: Promise<{
     authorName: string;
   }>;
-}
-
-async function getItemsByAuthor(authorName: string): Promise<CatalogItem[]> {
-  const params = new URLSearchParams();
-  params.append("search", authorName);
-
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-  const res = await fetch(
-    `${baseUrl}/api/python/catalog?${params.toString()}`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch catalog items");
-  }
-
-  const allItems: CatalogItem[] = await res.json();
-
-  // The API search is broad, so exclude matches from title, ISBN, or catalog ID.
-  return allItems.filter(
-    (item) => item.author?.toLowerCase() === authorName.toLowerCase()
-  );
 }
 
 export default async function AuthorPage({ params }: AuthorPageProps) {

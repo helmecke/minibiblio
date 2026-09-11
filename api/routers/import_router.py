@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.models.import_models import (
     CSVPreviewRow,
     CSVPreviewResponse,
-    ImportOptions,
     ImportResult,
     ImportError,
     ValidationStatus,

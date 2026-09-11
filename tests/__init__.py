@@ -1,0 +1,1 @@
+"""MiniBiblio test suite."""

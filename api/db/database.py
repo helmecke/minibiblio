@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from api.config import settings
@@ -31,5 +31,7 @@ async def get_db():
             raise
 
 
-# Alias for consistency
-get_async_session = get_db
+async def get_async_session():
+    """Dependency alias used by authentication routes."""
+    async for session in get_db():
+        yield session
