@@ -7,8 +7,6 @@ import uuid
 from api.models.catalog import CatalogItem, CatalogItemCreate, CatalogItemUpdate, CatalogItemType, CatalogItemStatus
 from api.db.database import get_db
 from api.db.models import CatalogItemDB
-from api.db.models import CatalogItemType as DBCatalogItemType
-from api.db.models import CatalogItemStatus as DBCatalogItemStatus
 from api.routers.settings import generate_catalog_id
 
 router = APIRouter(prefix="/catalog", tags=["catalog"])

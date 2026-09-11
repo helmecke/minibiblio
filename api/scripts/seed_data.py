@@ -11,9 +11,8 @@ import asyncio
 import argparse
 import random
 import uuid
-from datetime import datetime, timezone
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete
 from api.db.database import async_session_factory
 from api.db.models import (
     PatronDB,

@@ -99,6 +99,31 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 The FastApi server will be running on [http://127.0.0.1:8000](http://127.0.0.1:8000) – feel free to change the port in `package.json` (you'll also need to update it in `next.config.js`).
 
+## Validation
+
+Install and validate the frontend from its lockfile:
+
+```bash
+npm ci --legacy-peer-deps
+npm run lint
+npm run typecheck
+npm run test:ci
+npm run build
+```
+
+Backend integration tests require an explicitly designated PostgreSQL test database.
+The test database name must contain `test`; pytest refuses to start otherwise because
+the isolation fixture truncates application tables between tests. The `db_test` Compose
+service provides a suitable local database:
+
+```bash
+docker compose up -d db_test
+uv sync --frozen --dev
+DATABASE_URL="postgresql+asyncpg://postgres:password@localhost:5433/testdatabase" uv run alembic upgrade head
+uv run ruff check .
+TEST_DATABASE_URL="postgresql+asyncpg://postgres:password@localhost:5433/testdatabase" uv run pytest
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
