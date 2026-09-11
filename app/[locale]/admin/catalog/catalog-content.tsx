@@ -33,6 +33,7 @@ export function CatalogContent() {
 
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState(authorFilter || "");
   const [debouncedSearch, setDebouncedSearch] = useState(authorFilter || "");
@@ -64,6 +65,7 @@ export function CatalogContent() {
       setError(e instanceof Error ? e.message : tErrors("failedToLoad", { resource: t("title") }));
     } finally {
       setLoading(false);
+      setInitialLoadComplete(true);
     }
   }, [debouncedSearch, t, tErrors]);
 
@@ -125,7 +127,7 @@ export function CatalogContent() {
         </div>
       </div>
 
-      {loading ? (
+      {loading && !initialLoadComplete ? (
         <Card>
           <CardContent className="flex items-center justify-center py-10">
             <p className="text-muted-foreground">{tCommon("loading")}</p>
