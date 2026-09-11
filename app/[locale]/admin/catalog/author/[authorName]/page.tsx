@@ -18,49 +18,39 @@ interface CatalogItem {
 }
 
 interface AuthorPageProps {
-  params: {
+  params: Promise<{
     authorName: string;
-    locale: string;
-  };
+  }>;
 }
 
 async function getItemsByAuthor(authorName: string): Promise<CatalogItem[]> {
-  try {
-    const decodedAuthor = decodeURIComponent(authorName);
-    const params = new URLSearchParams();
-    params.append("search", decodedAuthor);
+  const params = new URLSearchParams();
+  params.append("search", authorName);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-    const res = await fetch(
-      `${baseUrl}/api/python/catalog?${params.toString()}`,
-      { cache: "no-store" }
-    );
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const res = await fetch(
+    `${baseUrl}/api/python/catalog?${params.toString()}`,
+    { cache: "no-store" }
+  );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch catalog items");
-    }
-
-    const allItems: CatalogItem[] = await res.json();
-
-    // Filter to only items that actually match the author
-    // (since search is broader and searches title, ISBN, etc.)
-    const filteredItems = allItems.filter(
-      (item) => item.author?.toLowerCase() === decodedAuthor.toLowerCase()
-    );
-
-    return filteredItems;
-  } catch (error) {
-    console.error("Error fetching items by author:", error);
-    return [];
+  if (!res.ok) {
+    throw new Error("Failed to fetch catalog items");
   }
+
+  const allItems: CatalogItem[] = await res.json();
+
+  // The API search is broad, so exclude matches from title, ISBN, or catalog ID.
+  return allItems.filter(
+    (item) => item.author?.toLowerCase() === authorName.toLowerCase()
+  );
 }
 
 export default async function AuthorPage({ params }: AuthorPageProps) {
-  const { authorName } = params;
+  const { authorName } = await params;
   const decodedAuthor = decodeURIComponent(authorName);
   const t = await getTranslations("catalog");
 
-  const items = await getItemsByAuthor(authorName);
+  const items = await getItemsByAuthor(decodedAuthor);
 
   return (
     <div className="space-y-6">
