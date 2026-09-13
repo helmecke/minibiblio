@@ -34,4 +34,4 @@
 ## 6. End-to-End Verification
 
 - [x] 6.1 Run all frontend and backend checks from clean lockfile-based environments and verify no tracked lockfile or generated configuration changes after the validation run.
-- [ ] 6.2 Open or update a pull request and verify GitHub Actions reports separate successful frontend and backend jobs while the tag-only Docker publication workflow remains untriggered.
+- [x] 6.2 Open or update a pull request and verify GitHub Actions reports separate successful frontend and backend jobs while the tag-only Docker publication workflow remains untriggered.
